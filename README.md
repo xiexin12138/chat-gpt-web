@@ -1,4 +1,4 @@
-# chat-test
+# chat-gpt-web
 
 ## Project setup
 ```
