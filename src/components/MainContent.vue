@@ -32,12 +32,14 @@
               ></path>
             </svg>
           </div>
+          <!-- white-space: pre-wrap 换行切保留空格 -->
           <div
             :style="{ color: item.type === 'error' ? 'red' : '' }"
+            style="white-space: pre-wrap"
             @click="copy(item)"
           >
-            {{ item.content }}
-            <BlinkBlock
+            {{ item.content
+            }}<BlinkBlock
               v-show="index + 1 === conversationList.length && showBlinkBlock"
             ></BlinkBlock>
           </div>
@@ -86,6 +88,9 @@ export default {
       document.execCommand("copy"); //复制该文本
       document.body.removeChild(input); //移除输入框
       this.$toast("已复制");
+    },
+    toList(val) {
+      return val.split("\\n");
     },
   },
 };

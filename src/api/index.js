@@ -1,19 +1,48 @@
 import axios from "axios";
+import "whatwg-fetch";
+import env from "/env.js";
 
-const BASE_URL =
-  process.env.NODE_ENV === "production" ? process.env.BASE_URL : "";
-console.log("🚀 ~ file: index.js:4 ~ BASE_URL", BASE_URL);
+const BASE_URL = env.NODE_ENV === "production" ? env.BASE_URL : "";
 // const OPEN_AI_API_BASE_URL =
-//   process.env.NODE_ENV === "production" ? global.OPEN_AI_API_BASE_URL : "";
+//   env.NODE_ENV === "production" ? global.OPEN_AI_API_BASE_URL : "";
 
-function getChatTextStream(prompt, options = {}) {
-  return completionFromOpenAI("completions", {
-    model: "text-davinci-003",
-    max_tokens: 1000,
-    // stop: "\\n",
-    ...options, // 以下部分不可修改
-    prompt,
-    stream: true,
+function getChatTextStream({
+  prompt,
+  resolve = () => {},
+  reject = () => {},
+  param = {},
+}) {
+  return completionFromOpenAI({
+    apiName: "completions",
+    body: {
+      model: "text-davinci-003",
+      ...param,
+      // 以下部分不可修改
+      prompt,
+      stream: true,
+    },
+    resolve,
+    reject,
+  });
+}
+
+function getCodeTextStream({
+  prompt,
+  resolve = () => {},
+  reject = () => {},
+  param = {},
+}) {
+  return completionFromOpenAI({
+    apiName: "completions",
+    body: {
+      model: "code-davinci-002",
+      ...param,
+      // 以下部分不可修改
+      prompt,
+      stream: true,
+    },
+    resolve,
+    reject,
   });
 }
 
@@ -24,19 +53,73 @@ function getChatTextStream(prompt, options = {}) {
  * @param {Object} headers 请求头配置
  * @returns
  */
-function completionFromOpenAI(apiName, options, headers) {
-  console.log(
-    "🚀 ~ file: index.js:32 ~ completionFromOpenAI ~ process.env.KEY",
-    process.env.KEY
-  );
-  return axios.post(`${BASE_URL}/v1/${apiName}`, options, {
+function completionFromOpenAI({
+  apiName,
+  body,
+  resolve = () => {},
+  reject = () => {},
+  headers = {},
+  maxCycleTimes = 5000, // 设置上限防止死循环
+}) {
+  let loading = true;
+  let controller, signal;
+  if (AbortController) {
+    controller = new AbortController();
+    signal = controller.signal;
+  }
+  fetch(`${BASE_URL}/v1/${apiName}`, {
     headers: {
-      "content-type": "application/json",
-      Authorization: `Bearer ${process.env.KEY}`,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${env.KEY}`,
+      ...headers,
     },
+    method: "POST",
+    body: JSON.stringify({
+      max_tokens: 2000, // 默认限制 max_tokens 为 2000
+      ...body,
+    }),
     timeout: 60 * 1000,
-    ...headers,
-  });
+    signal,
+  })
+    .then(async (es) => {
+      let decoder = new TextDecoder("utf-8");
+      let count = 0;
+      let reader = es.body.getReader();
+      while (loading && count <= (maxCycleTimes || 5000)) {
+        let res = await reader?.read();
+        let dataStringList = decoder.decode(res.value).split("data: ");
+        if (res?.done || dataStringList?.[1]?.includes("[DONE]\n\n")) {
+          loading = false;
+          reject();
+          break;
+        }
+        if (dataStringList.length === 2) {
+          let obj = JSON.parse(dataStringList[1]);
+          resolve(obj.choices[0].text);
+        } else if (dataStringList.length > 2) {
+          for (let i = 1; i < dataStringList.length; i++) {
+            if (dataStringList?.[i]?.includes("[DONE]\n\n")) {
+              loading = false;
+              reject();
+              break;
+            } else {
+              let obj = JSON.parse(dataStringList[i]);
+              resolve(obj.choices[0].text);
+            }
+          }
+        }
+        count++;
+      }
+    })
+    .catch((err) => {
+      reject(err);
+    });
+  return function () {
+    loading = false;
+    if (AbortController) {
+      controller.abort();
+    }
+  };
 }
 
 /**
@@ -93,4 +176,5 @@ export default {
   getChatImage: images("getChatImage"),
   completionFromOpenAI,
   getChatTextStream,
+  getCodeTextStream,
 };

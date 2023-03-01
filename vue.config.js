@@ -1,19 +1,20 @@
 const { defineConfig } = require("@vue/cli-service");
-require("dotenv").config();
+const path = require("path");
+const env = require(path.join(__dirname, "./env.js"));
 
 let config = defineConfig({
   transpileDependencies: true,
   devServer: {
     proxy: {
       "^/user": {
-        target: `${process.env.BASE_URL}:${process.env.BACKEND_PORT}`,
+        target: `${env.BASE_URL}:${env.BACKEND_PORT}`,
         changeOrigin: true,
       },
       "^/v1": {
-        target: process.env.OPEN_AI_API_BASE_URL,
-        changeOrigin: true,
+        target: env.OPEN_AI_API_BASE_URL,
       },
     },
+    compress: false,
   },
   productionSourceMap: false,
 });

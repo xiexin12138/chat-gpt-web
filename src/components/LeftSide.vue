@@ -34,10 +34,6 @@ export default {
     };
   },
   mounted() {
-    console.log(
-      "🚀 ~ file: LeftSide.vue:29 ~ mounted ~ this.$route",
-      this.$route
-    );
     this.initMenu();
   },
   methods: {

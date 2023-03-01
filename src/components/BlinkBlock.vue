@@ -1,5 +1,5 @@
 <template>
-  <p class="loading-text">&ZeroWidthSpace;</p>
+  <span class="loading-text">&ZeroWidthSpace;</span>
 </template>
 
 <script>

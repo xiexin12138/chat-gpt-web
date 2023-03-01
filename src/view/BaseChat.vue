@@ -36,9 +36,8 @@
         >
           <template #button>
             <van-button
-              :loading="isLoadingChat"
               @click="commit(promptValue)"
-              icon="guide-o"
+              :icon="isLoadingChat ? 'stop-circle-o' : 'guide-o'"
               type="default"
             />
           </template>
@@ -64,8 +63,6 @@ import { Field, Button, NavBar, Popup } from "vant";
 import MainContentEmpty from "@/components/MainContentEmpty.vue";
 import MainContent from "@/components/MainContent.vue";
 import LeftSide from "@/components/LeftSide.vue";
-import hljs from "highlight.js";
-import "highlight.js/styles/github.css"; // 选择自己喜欢的主题
 
 export default {
   name: "BaseChat",
@@ -104,6 +101,10 @@ export default {
       testMsg: "",
       code: ``,
       groupName: this.$global.name,
+      dataBuffer: "",
+      stopGenerated: () => {
+        console.log("未更新的stop");
+      },
     };
   },
   mounted() {
@@ -113,23 +114,19 @@ export default {
     } else {
       this.haveSideBar = false;
     }
-    api.getChatTextStream("如何实现服务端发送事件?").then((data) => {
-      console.log(
-        "🚀 ~ file: BaseChat.vue:96 ~ api.getChatTextStream ~ data",
-        data
-      );
-    });
-    const evtSource = new EventSource("v1/completions", {
-      withCredentials: true,
-    });
-    evtSource.addEventListener("data", (event) => {
-      console.log(
-        "🚀 ~ file: BaseChat.vue:99 ~ evtSource.addEventListener ~ event",
-        event
-      );
-    });
   },
   methods: {
+    getStreamAnswer(prompt) {
+      this.stopGenerated = api.getChatTextStream({
+        prompt,
+        resolve: (data) => {
+          this.dataBuffer += data;
+        },
+        reject: () => {
+          this.isLoadingChat = false;
+        },
+      });
+    },
     go(obj) {
       this.$router.push({
         name: obj.name,
@@ -143,51 +140,55 @@ export default {
       }
       this.showNav = true;
     },
-    highlightCode() {
-      if (this.type !== "code") {
-        return;
-      }
-      const blocks = this.$el.querySelectorAll("pre code");
-      blocks.forEach((block) => {
-        hljs.highlightBlock(block);
-      });
-    },
     async commit(content) {
+      if (!this.isLoadingChat && !content) {
+        return this.$toast("请输入问题");
+      }
+      console.log("🚀 ~ file: BaseChat.vue:144 ~ commit ~ content:", content);
       if (this.isLoadingChat) {
-        return;
-      }
-      this.isLoadingChat = true;
-      this.promptValue = "";
-      this.conversationList.push({
-        type: "question",
-        content,
-      });
-      this.conversationList.push({
-        type: "answer",
-        content: "",
-      });
-      let result = {};
-      // const bodyEle = document.body; // 内容总高度
-      // const htmlEle = document.body.parentElement;
-      try {
-        let requestApi = api[this.api];
-        let response = await requestApi(content);
-        let { answer = "" } = response.data;
-        result = {
+        this.stopGenerated();
+        this.isLoadingChat = false;
+      } else {
+        this.isLoadingChat = true;
+        this.promptValue = "";
+        this.conversationList.push({
+          type: "question",
+          content,
+        });
+        this.conversationList.push({
           type: "answer",
-          content: answer,
-        };
-      } catch (error) {
-        this.promptValue = content;
-        result = {
-          type: "error",
-          content: error.message,
-        };
+          content: "",
+        });
+        let answer = this.conversationList[this.conversationList.length - 1];
+        try {
+          let requestApi = api[this.api];
+          this.stopGenerated = requestApi({
+            prompt: content,
+            resolve: (data) => {
+              answer.content += data;
+            },
+            reject: (error) => {
+              this.isLoadingChat = false;
+              if (!error) {
+                this.isLoadingChat = false;
+              } else if (
+                error?.message?.includes("The user aborted a request")
+              ) {
+                this.promptValue = content;
+              } else {
+                this.promptValue = content;
+                answer.type = "error";
+                answer.content = error.message;
+              }
+            },
+          });
+        } catch (error) {
+          this.promptValue = content;
+          answer.type = "error";
+          answer.content = error.message;
+          this.isLoadingChat = false;
+        }
       }
-      this.conversationList.pop();
-      this.conversationList.push(result);
-      this.highlightCode();
-      this.isLoadingChat = false;
     },
     recommit() {
       this.conversationList.pop();
