@@ -14,7 +14,7 @@ let config = defineConfig({
         target: env.OPEN_AI_API_BASE_URL,
       },
     },
-    compress: false,
+    compress: false
   },
   productionSourceMap: false,
 });
