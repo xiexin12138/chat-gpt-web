@@ -1,24 +1,42 @@
-import axios from "axios";
 import "whatwg-fetch";
 import env from "/env.js";
 
-const BASE_URL = env.NODE_ENV === "production" ? env.BASE_URL : "";
-// const OPEN_AI_API_BASE_URL =
-//   env.NODE_ENV === "production" ? global.OPEN_AI_API_BASE_URL : "";
+const BASE_URL = env.BASE_URL; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
 
-function getChatTextStream({
-  prompt,
+/**
+ * 请求答案的
+ * @param {Object} parameter 入参
+ * @param {string} parameter.prompt 获取代码补全的提示文本
+ * @param {Function} parameter.resolve 获取代码补全流式返回的函数，会持续返回数据
+ * @param {Function} parameter.reject 获取代码补全流式返回结束或异常的函数，当数据接收完毕或发生异常时会触发该函数
+ * @param {Object} parameter.param 其他需要放到请求体重的入参
+ * @returns {Function} 停止函数，当需要手动终止请求时调用
+ */
+function getCodeTextStream({
+  messages,
   resolve = () => {},
   reject = () => {},
   param = {},
-}) {
+} = {}) {
+  let today = new Date();
+  let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
   return completionFromOpenAI({
-    apiName: "completions",
+    apiName: "chat/completions",
     body: {
-      model: "text-davinci-003",
+      model: "gpt-3.5-turbo",
       ...param,
       // 以下部分不可修改
-      prompt,
+      messages: [
+        {
+          role: "system",
+          content: `你是一个善于处理代码问题的AI人工智能助手，你知识截止日期是${yesterday.getFullYear()}年${
+            yesterday.getMonth() + 1
+          }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
+            today.getMonth() + 1
+          }月${today.getDate()}日`,
+        },
+        ...messages,
+      ],
       stream: true,
     },
     resolve,
@@ -26,19 +44,31 @@ function getChatTextStream({
   });
 }
 
-function getCodeTextStream({
-  prompt,
+function getTurboStream({
+  messages,
   resolve = () => {},
   reject = () => {},
   param = {},
 }) {
+  let today = new Date();
+  let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
   return completionFromOpenAI({
-    apiName: "completions",
+    apiName: "chat/completions",
     body: {
-      model: "code-davinci-002",
+      model: "gpt-3.5-turbo",
       ...param,
       // 以下部分不可修改
-      prompt,
+      messages: [
+        {
+          role: "system",
+          content: `你是一个全方位能力都很强大的AI人工智能助手，你知识库的截止日期是${yesterday.getFullYear()}年${
+            yesterday.getMonth() + 1
+          }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
+            today.getMonth() + 1
+          }月${today.getDate()}日`,
+        },
+        ...messages,
+      ],
       stream: true,
     },
     resolve,
@@ -47,7 +77,7 @@ function getCodeTextStream({
 }
 
 /**
- * 从 OpenAI 官方接口进行请求
+ * 从 OpenAI 官方接口进行请求，并强制启用流式返回以提高响应速度
  * @param {String} apiName 要请求的方法名
  * @param {Object} options 使用的配置项
  * @param {Object} headers 请求头配置
@@ -94,8 +124,10 @@ function completionFromOpenAI({
           break;
         }
         if (dataStringList.length === 2) {
-          let obj = JSON.parse(dataStringList[1]);
-          resolve(obj.choices[0].text);
+          let obj = parse(dataStringList[1]);
+          resolve(
+            obj?.choices?.[0]?.text || obj?.choices?.[0]?.delta?.content || ""
+          );
         } else if (dataStringList.length > 2) {
           for (let i = 1; i < dataStringList.length; i++) {
             if (dataStringList?.[i]?.includes("[DONE]\n\n")) {
@@ -103,8 +135,12 @@ function completionFromOpenAI({
               reject();
               break;
             } else {
-              let obj = JSON.parse(dataStringList[i]);
-              resolve(obj.choices[0].text);
+              let obj = parse(dataStringList[i]);
+              resolve(
+                obj?.choices?.[0]?.text ||
+                  obj?.choices?.[0]?.delta?.content ||
+                  ""
+              );
             }
           }
         }
@@ -122,59 +158,15 @@ function completionFromOpenAI({
   };
 }
 
-/**
- * 获取指定模型的补全函数
- * @param {String} apiName 使用的 API 名称，会拼接到URL中
- * @param {String} model 使用的模型名称
- * @returns {Function}
- */
-function completion(apiName, model) {
-  return function (question) {
-    return axios.post(
-      `${BASE_URL}/user/${apiName}`,
-      { question, model },
-      {
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-        timeout: 60 * 1000,
-      }
-    );
-  };
-}
-
-/**
- * 获取指定配置的图像生成函数
- * @param {String} apiName 请求后端的API名
- * @param {{n:Number, size:String, response_format:String}} config 相关的调整参数
- * @returns {Function(prompt:String)}
- */
-function images(
-  apiName,
-  config = {
-    n: 2, // 生成图像的数量，必须介于 1 到 10
-    size: "1024x1024", // 生成图片规格，三选一 256x256， 512x512， 或 1024x1024
-    response_format: "url", // 返回生成图像的格式，必须是这其中的一个 url 或 b64_json
+function parse(str) {
+  try {
+    return JSON.parse(str);
+  } catch (err) {
+    return {};
   }
-) {
-  /**
-   * @param {String} prompt 想要的图像的文本描述，最大的长度是 1000 个字符
-   */
-  return function (prompt) {
-    return axios.post(
-      `${BASE_URL}/user/${apiName}`,
-      { ...config, prompt },
-      {
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-        timeout: 60 * 1000,
-      }
-    );
-  };
 }
 
 export default {
-  getChatText: completion("getChatText", "text-davinci-003"),
-  getChatCode: completion("getChatCode", "code-davinci-002"),
-  getChatImage: images("getChatImage"),
-  completionFromOpenAI,
-  getChatTextStream,
   getCodeTextStream,
+  getTurboStream,
 };

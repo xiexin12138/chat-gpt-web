@@ -1,7 +1,7 @@
 <template>
   <div>
     <van-nav-bar
-      :title="title"
+      :title="conversationList.length > 0 ? title : ''"
       style="position: fixed; top: 0; left: 0; width: 100%"
       @click-left="toShowNav"
     >
@@ -16,6 +16,7 @@
         v-show="conversationList.length > 0"
       ></MainContent>
       <MainContentEmpty
+        :title="title"
         v-show="conversationList.length === 0"
         :type="type"
         @commit="commit"
@@ -43,7 +44,7 @@
           </template>
         </field>
         <div class="bottom-area-text">
-          基于OpenAi GPT-3模型，{{ groupName }}提供体验服务
+          基于开源语音模型，{{ groupName }}提供体验服务
         </div>
       </div>
     </div>
@@ -116,17 +117,6 @@ export default {
     }
   },
   methods: {
-    getStreamAnswer(prompt) {
-      this.stopGenerated = api.getChatTextStream({
-        prompt,
-        resolve: (data) => {
-          this.dataBuffer += data;
-        },
-        reject: () => {
-          this.isLoadingChat = false;
-        },
-      });
-    },
     go(obj) {
       this.$router.push({
         name: obj.name,
@@ -146,8 +136,8 @@ export default {
       }
       console.log("🚀 ~ file: BaseChat.vue:144 ~ commit ~ content:", content);
       if (this.isLoadingChat) {
-        this.stopGenerated();
         this.isLoadingChat = false;
+        this.stopGenerated();
       } else {
         this.isLoadingChat = true;
         this.promptValue = "";
@@ -162,26 +152,37 @@ export default {
         let answer = this.conversationList[this.conversationList.length - 1];
         try {
           let requestApi = api[this.api];
-          this.stopGenerated = requestApi({
-            prompt: content,
+          let param = {
+            messages: [],
             resolve: (data) => {
               answer.content += data;
             },
             reject: (error) => {
               this.isLoadingChat = false;
-              if (!error) {
-                this.isLoadingChat = false;
-              } else if (
-                error?.message?.includes("The user aborted a request")
-              ) {
-                this.promptValue = content;
-              } else {
+              if (error && error?.message?.includes("aborted")) {
+                this.promptValue = "";
+              } else if (error) {
                 this.promptValue = content;
                 answer.type = "error";
                 answer.content = error.message;
               }
             },
+          };
+          let list = this.conversationList.slice(-(2 * 5)); // 获取最后5次对话
+          list.forEach((conversation) => {
+            if (conversation.type === "question") {
+              param.messages.push({
+                role: "user",
+                content: conversation.content,
+              });
+            } else if (conversation.type === "answer" && conversation.content) {
+              param.messages.push({
+                role: "assistant",
+                content: conversation.content,
+              });
+            }
           });
+          this.stopGenerated = requestApi(param);
         } catch (error) {
           this.promptValue = content;
           answer.type = "error";

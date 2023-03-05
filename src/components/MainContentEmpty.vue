@@ -1,6 +1,6 @@
 <template>
   <div class="demo-list">
-    <h1 class="text-color">GPT-3 Model</h1>
+    <h1 class="text-color">{{ title }}</h1>
     <div class="demo-block">
       <h2 class="demo-block-title">
         <svg
@@ -61,11 +61,11 @@
             d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
           ></path>
         </svg>
-        能力 ( 后续支持 )
+        能力 ( 现已支持 🎉 )
       </h2>
       <div class="demo-button">
         <van-button color="rgb(247, 247, 248)" block style="color: black"
-          >记得用户之前在对话中说过什么
+          >记得用户之前在最近5次对话中说过什么
         </van-button>
       </div>
       <div class="demo-button">
@@ -125,6 +125,10 @@ import { Button } from "vant";
 export default {
   components: { VanButton: Button },
   props: {
+    title: {
+      type: String,
+      default: "",
+    },
     type: {
       type: String,
       required: true,

@@ -13,7 +13,7 @@ const routes = [
         path: "chat",
         name: "chat",
         component: () => import("@/view/BaseChat.vue"),
-        meta: { title: "文本生成工具", api: "getChatTextStream" },
+        meta: { title: "文本生成工具", api: "getTurboStream" },
         props: (router) => {
           let {
             meta: { title, api },
