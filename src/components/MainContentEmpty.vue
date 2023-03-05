@@ -170,7 +170,6 @@ export default {
   height: 100%;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 150px;
 }
 .demo-block {
   width: 100vw;

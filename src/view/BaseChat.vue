@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100vh">
     <van-nav-bar
       :title="conversationList.length > 0 ? title : ''"
       style="position: fixed; top: 0; left: 0; width: 100%"
@@ -9,12 +9,13 @@
         <van-icon name="apps-o" size="18" color="black" />
       </template>
     </van-nav-bar>
-    <div id="content" ref="content" style="margin-top: 40px">
+    <div ref="content" style="padding-top: 40px;padding-bottom: 150px">
       <MainContent
+        id="content"
         :loading="isLoadingChat"
         :conversationList="conversationList"
         v-show="conversationList.length > 0"
-      ></MainContent>
+      />
       <MainContentEmpty
         :title="title"
         v-show="conversationList.length === 0"
@@ -44,7 +45,7 @@
           </template>
         </field>
         <div class="bottom-area-text">
-          基于开源语音模型，{{ groupName }}提供体验服务
+          基于语言模型，{{ groupName }}提供体验服务
         </div>
       </div>
     </div>
@@ -144,6 +145,7 @@ export default {
         this.stopGenerated();
       } else {
         this.isLoadingChat = true;
+        this.promptValue = this.promptValue === content ? "" : this.promptValue;
         this.conversationList.push({
           type: "question",
           content,
@@ -164,8 +166,8 @@ export default {
               this.isLoadingChat = false;
               if (error && error?.message?.includes("aborted")) {
                 if (!answer.content) {
-                  answer.type = 'error'
-                  answer.content = '已终止获取回答'
+                  answer.type = "error";
+                  answer.content = "已终止获取回答";
                 }
               } else if (error) {
                 this.promptValue = this.promptValue
