@@ -134,13 +134,16 @@ export default {
       if (!this.isLoadingChat && !content) {
         return this.$toast("请输入问题");
       }
-      console.log("🚀 ~ file: BaseChat.vue:144 ~ commit ~ content:", content);
+      console.log(
+        "🚀 ~ file: BaseChat.vue:144 ~ commit ~ content:",
+        this.isLoadingChat,
+        content
+      );
       if (this.isLoadingChat) {
         this.isLoadingChat = false;
         this.stopGenerated();
       } else {
         this.isLoadingChat = true;
-        this.promptValue = "";
         this.conversationList.push({
           type: "question",
           content,
@@ -160,9 +163,14 @@ export default {
             reject: (error) => {
               this.isLoadingChat = false;
               if (error && error?.message?.includes("aborted")) {
-                this.promptValue = "";
+                if (!answer.content) {
+                  answer.type = 'error'
+                  answer.content = '已终止获取回答'
+                }
               } else if (error) {
-                this.promptValue = content;
+                this.promptValue = this.promptValue
+                  ? this.promptValue
+                  : content;
                 answer.type = "error";
                 answer.content = error.message;
               }
@@ -184,7 +192,7 @@ export default {
           });
           this.stopGenerated = requestApi(param);
         } catch (error) {
-          this.promptValue = content;
+          this.promptValue = this.promptValue ? this.promptValue : content;
           answer.type = "error";
           answer.content = error.message;
           this.isLoadingChat = false;
