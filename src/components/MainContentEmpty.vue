@@ -61,7 +61,7 @@
             d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
           ></path>
         </svg>
-        能力 ( 现已支持 🎉 )
+        能力
       </h2>
       <div class="demo-button">
         <van-button color="rgb(247, 247, 248)" block style="color: black"
