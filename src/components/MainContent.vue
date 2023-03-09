@@ -46,11 +46,7 @@
           </div>
           <div style="display: flex; flex-direction: row-reverse">
             <van-button
-              v-if="
-                item.type === 'answer' &&
-                item.content &&
-                item.content.length > 0
-              "
+              v-if="item.type === 'answer'"
               icon="description"
               @click="copy(item)"
             />
@@ -93,7 +89,7 @@ export default {
   },
   methods: {
     copy(obj) {
-      let val = obj.content;
+      let val = obj.content || "";
       const input = document.createElement("input"); //创建input
       input.setAttribute("value", val); //把input设置value
       document.body.appendChild(input); //添加这个dom对象
