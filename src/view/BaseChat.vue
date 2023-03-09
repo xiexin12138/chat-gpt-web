@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100vh">
+  <div ref="wrap" style="height: 100vh; overflow: scroll">
     <van-nav-bar
       :title="conversationList.length > 0 ? title : ''"
       style="position: fixed; top: 0; left: 0; width: 100%"
@@ -9,9 +9,8 @@
         <van-icon name="apps-o" size="18" color="black" />
       </template>
     </van-nav-bar>
-    <div ref="content" style="padding-top: 40px;padding-bottom: 150px">
+    <div style="padding-top: 40px; padding-bottom: 150px; overflow: scroll">
       <MainContent
-        id="content"
         :loading="isLoadingChat"
         :conversationList="conversationList"
         v-show="conversationList.length > 0"
@@ -105,6 +104,7 @@ export default {
       code: ``,
       groupName: this.$global.name,
       dataBuffer: "",
+      windowHeight: 0,
       stopGenerated: () => {
         console.log("未更新的stop");
       },
@@ -117,6 +117,11 @@ export default {
     } else {
       this.haveSideBar = false;
     }
+    // 获取视窗高度
+    this.windowHeight =
+      window.innerHeight ||
+      document.documentElement.clientHeight ||
+      document.body.clientHeight;
   },
   methods: {
     sendMessage(event) {
@@ -131,9 +136,11 @@ export default {
       }
     },
     go(obj) {
-      this.$router.push({
-        name: obj.name,
-      });
+      if (this.$route.name !== obj.name) {
+        this.$router.push({
+          name: obj.name,
+        });
+      }
       this.conversationList = [];
       this.showNav = false;
     },
@@ -167,7 +174,15 @@ export default {
           let param = {
             messages: [],
             resolve: (data) => {
-              answer.content += data;
+              this.$nextTick(() => {
+                answer.content += data;
+                if (
+                  this.windowHeight + this.$refs.wrap.scrollTop + 50 >=
+                  this.$refs.wrap.scrollHeight
+                ) {
+                  this.$refs.wrap.scrollTo(0, this.$refs.wrap.scrollHeight);
+                }
+              });
             },
             reject: (result) => {
               this.isLoadingChat = false;
@@ -208,6 +223,9 @@ export default {
           answer.content = error.message;
           this.isLoadingChat = false;
         }
+        this.$nextTick(() => {
+          this.$refs.wrap.scrollTo(0, this.$refs.wrap.scrollHeight);
+        });
       }
     },
     recommit() {
