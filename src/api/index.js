@@ -16,12 +16,13 @@ function getCodeTextStream({
   messages,
   resolve = () => {},
   reject = () => {},
+  abort = () => {},
   param = {},
 } = {}) {
   let today = new Date();
   let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
   return completionFromOpenAI({
-    apiName: "chat/completions",
+    apiName: "/v1/chat/completions",
     body: {
       model: "gpt-3.5-turbo",
       ...param,
@@ -41,6 +42,7 @@ function getCodeTextStream({
     },
     resolve,
     reject,
+    abort,
   });
 }
 
@@ -48,12 +50,13 @@ function getTurboStream({
   messages,
   resolve = () => {},
   reject = () => {},
+  abort = () => {},
   param = {},
 }) {
   let today = new Date();
   let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
   return completionFromOpenAI({
-    apiName: "chat/completions",
+    apiName: "/v1/chat/completions",
     body: {
       model: "gpt-3.5-turbo",
       ...param,
@@ -73,21 +76,28 @@ function getTurboStream({
     },
     resolve,
     reject,
+    abort,
   });
 }
 
 /**
- * 从 OpenAI 官方接口进行请求，并强制启用流式返回以提高响应速度
- * @param {String} apiName 要请求的方法名
- * @param {Object} options 使用的配置项
- * @param {Object} headers 请求头配置
- * @returns
+ * 从接口进行请求，并强制启用流式返回以提高响应速度
+ * @param {Object} param 入参对象
+ * @param {String} param.apiName 请求的域名，如 /v1/chat/completion
+ * @param {Object} param.body 请求体
+ * @param {Object} param.headers 请求头对象
+ * @param {Function} param.resolve 接收流式返回的数据，通过 resolve 中的 data 接收，如 resolve(data) => { let result = result + data }
+ * @param {Function} param.reject 异常或正常结束时调用，异常时会抛出 error
+ * @param {Function} param.abort 手动终止时触发的方法
+ * @param {number} param.maxCycleTimes 流式请求最大读取次数，防止死循环，建议默认值即可
+ * @returns 
  */
 function completionFromOpenAI({
   apiName,
   body,
   resolve = () => {},
   reject = () => {},
+  abort = () => {},
   headers = {},
   maxCycleTimes = 5000, // 设置上限防止死循环
 }) {
@@ -97,7 +107,7 @@ function completionFromOpenAI({
     controller = new AbortController();
     signal = controller.signal;
   }
-  fetch(`${BASE_URL}/v1/${apiName}`, {
+  fetch(`${BASE_URL}${apiName}`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${env.KEY}`,
@@ -148,7 +158,11 @@ function completionFromOpenAI({
       }
     })
     .catch((err) => {
-      reject(err);
+      if (err?.name === "AbortError") {
+        abort();
+      } else {
+        reject(err);
+      }
     });
   return function () {
     loading = false;

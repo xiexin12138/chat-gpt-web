@@ -147,11 +147,6 @@ export default {
       if (!this.isLoadingChat && !content) {
         return this.$toast("请输入问题");
       }
-      console.log(
-        "🚀 ~ file: BaseChat.vue:144 ~ commit ~ content:",
-        this.isLoadingChat,
-        content
-      );
       if (this.isLoadingChat) {
         this.isLoadingChat = false;
         this.stopGenerated();
@@ -174,19 +169,21 @@ export default {
             resolve: (data) => {
               answer.content += data;
             },
-            reject: (error) => {
+            reject: (result) => {
               this.isLoadingChat = false;
-              if (error && error?.message?.includes("aborted")) {
-                if (!answer.content) {
-                  answer.type = "error";
-                  answer.content = "已终止获取回答";
-                }
-              } else if (error) {
+              if (result) {
                 this.promptValue = this.promptValue
                   ? this.promptValue
                   : content;
                 answer.type = "error";
-                answer.content = error.message;
+                answer.content = result?.message;
+              }
+            },
+            abort: () => {
+              this.$toast("已中止请求");
+              if (!answer.content) {
+                answer.type = "error";
+                answer.content = "已手动中止请求";
               }
             },
           };
