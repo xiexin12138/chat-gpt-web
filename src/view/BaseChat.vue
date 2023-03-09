@@ -27,6 +27,7 @@
       <div class="bottom-area-form">
         <field
           v-model="promptValue"
+          @keydown="sendMessage"
           :placeholder="placeholder"
           label-class="left-label"
           show-word-limit
@@ -118,6 +119,17 @@ export default {
     }
   },
   methods: {
+    sendMessage(event) {
+      if (this.isLoadingChat) {
+        return;
+      }
+      let isCtrlAndEnter = event?.ctrlKey && event.keyCode === 13;
+      let isCommandAndEnter = event?.metaKey && event.keyCode === 13;
+      if (isCommandAndEnter || isCtrlAndEnter) {
+        // 如果是 ctrl+enter 或 command+enter 就发送请求
+        this.commit(this.promptValue);
+      }
+    },
     go(obj) {
       this.$router.push({
         name: obj.name,
