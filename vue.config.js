@@ -15,12 +15,8 @@ let config = defineConfig({
   },
   devServer: {
     proxy: {
-      "^/user": {
-        target: `${env.BASE_URL}:${env.BACKEND_PORT}`,
-        changeOrigin: true,
-      },
       "^/v1": {
-        target: env.OPEN_AI_API_BASE_URL,
+        target: env.BASE_URL,
       },
     },
     compress: false, // 如果本地开发想要启用 SSE (Server-Sent Event)，必须设置为false
