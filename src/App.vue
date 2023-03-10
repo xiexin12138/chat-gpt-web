@@ -40,7 +40,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$route);
     this.title = this.$route.meta.title;
   },
   methods: {

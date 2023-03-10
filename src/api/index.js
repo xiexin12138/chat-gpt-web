@@ -3,47 +3,30 @@ import env from "/env.js";
 
 const BASE_URL = env.BASE_URL; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
 
-/**
- * 请求答案的
- * @param {Object} parameter 入参
- * @param {string} parameter.prompt 获取代码补全的提示文本
- * @param {Function} parameter.resolve 获取代码补全流式返回的函数，会持续返回数据
- * @param {Function} parameter.reject 获取代码补全流式返回结束或异常的函数，当数据接收完毕或发生异常时会触发该函数
- * @param {Object} parameter.param 其他需要放到请求体重的入参
- * @returns {Function} 停止函数，当需要手动终止请求时调用
- */
-function getCodeTextStream({
-  messages,
-  resolve = () => {},
-  reject = () => {},
-  abort = () => {},
-  param = {},
-} = {}) {
-  let today = new Date();
-  let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
-  return completionFromOpenAI({
-    apiName: "/v1/chat/completions",
-    body: {
-      model: "gpt-3.5-turbo",
-      ...param,
-      // 以下部分不可修改
-      messages: [
-        {
-          role: "system",
-          content: `你是一个善于处理代码问题的AI人工智能助手，你知识截止日期是${yesterday.getFullYear()}年${
-            yesterday.getMonth() + 1
-          }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
-            today.getMonth() + 1
-          }月${today.getDate()}日`,
-        },
-        ...messages,
-      ],
-      stream: true,
+function getAnswerText(messages) {
+  let signal, controller;
+  if (AbortController) {
+    controller = new AbortController();
+    signal = controller.signal;
+  }
+  function innerFetch() {
+    return fetch(`${env.BASE_URL}/mygpt3/qtext`, {
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        messages,
+      }),
+      signal,
+    });
+  }
+  return {
+    abort: function () {
+      controller.abort();
     },
-    resolve,
-    reject,
-    abort,
-  });
+    fetch: innerFetch,
+  };
 }
 
 function getTurboStream({
@@ -90,7 +73,7 @@ function getTurboStream({
  * @param {Function} param.reject 异常或正常结束时调用，异常时会抛出 error
  * @param {Function} param.abort 手动终止时触发的方法
  * @param {number} param.maxCycleTimes 流式请求最大读取次数，防止死循环，建议默认值即可
- * @returns 
+ * @returns
  */
 function completionFromOpenAI({
   apiName,
@@ -110,7 +93,6 @@ function completionFromOpenAI({
   fetch(`${BASE_URL}${apiName}`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${env.KEY}`,
       ...headers,
     },
     method: "POST",
@@ -181,6 +163,6 @@ function parse(str) {
 }
 
 export default {
-  getCodeTextStream,
   getTurboStream,
+  getAnswerText,
 };

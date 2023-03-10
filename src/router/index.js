@@ -6,6 +6,10 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
+    redirect: '/chat'
+  },
+  {
+    path: "/",
     name: "index",
     component: () => import("@/App.vue"),
     children: [
@@ -13,7 +17,7 @@ const routes = [
         path: "chat",
         name: "chat",
         component: () => import("@/view/BaseChat.vue"),
-        meta: { title: "文本生成工具", api: "getTurboStream" },
+        meta: { title: "文本生成工具", api: "getAnswerText" },
         props: (router) => {
           let {
             meta: { title, api },
@@ -22,19 +26,19 @@ const routes = [
           return { title, type, api };
         },
       },
-      {
-        path: "code",
-        name: "code",
-        component: () => import("@/view/BaseChat.vue"),
-        meta: { title: "代码生成工具", api: "getCodeTextStream" },
-        props: (router) => {
-          let {
-            meta: { title, api },
-            name: type,
-          } = router;
-          return { title, type, api };
-        },
-      },
+      // {
+      //   path: "code",
+      //   name: "code",
+      //   component: () => import("@/view/BaseChat.vue"),
+      //   meta: { title: "代码生成工具", api: "getCodeTextStream" },
+      //   props: (router) => {
+      //     let {
+      //       meta: { title, api },
+      //       name: type,
+      //     } = router;
+      //     return { title, type, api };
+      //   },
+      // },
       {
         path: "updateLog",
         name: "updateLog",

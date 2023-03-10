@@ -136,10 +136,6 @@ export default {
   },
   methods: {
     commit(question) {
-      console.log(
-        "🚀 ~ file: MainContentEmpty.vue:142 ~ commit ~ question",
-        question
-      );
       this.$emit("commit", question);
     },
   },

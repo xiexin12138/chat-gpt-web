@@ -10,7 +10,12 @@ let config = defineConfig({
         args[0].terserOptions.compress.drop_console = true;
         args[0].terserOptions.compress.drop_debugger = true;
         return args;
-      }); 
+      });
+      config.plugin("html").tap((args) => {
+        args[0].template = "public/index.html";
+        args[0].filename = "asms.html";
+        return args;
+      });
     }
   },
   devServer: {

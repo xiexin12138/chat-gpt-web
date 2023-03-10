@@ -133,63 +133,46 @@ export default {
           content: "",
         });
         let answer = this.conversationList[this.conversationList.length - 1];
-        try {
-          let requestApi = api[this.api];
-          let param = {
-            messages: [],
-            resolve: (data) => {
-              this.$nextTick(() => {
-                answer.content += data;
-                if (
-                  this.windowHeight + this.$refs.wrap.scrollTop + 50 >=
-                  this.$refs.wrap.scrollHeight
-                ) {
-                  this.$refs.wrap.scrollTo(0, this.$refs.wrap.scrollHeight);
-                }
-              });
-            },
-            reject: (result) => {
-              this.isLoadingChat = false;
-              if (result) {
-                this.promptValue = this.promptValue
-                  ? this.promptValue
-                  : content;
-                answer.type = "error";
-                answer.content = result?.message;
-              }
-            },
-            abort: () => {
-              this.$toast("已中止请求");
-              if (!answer.content) {
-                answer.type = "error";
-                answer.content = "已手动中止请求";
-              }
-            },
-          };
-          let list = this.conversationList.slice(-(2 * 5)); // 获取最后5次对话
-          list.forEach((conversation) => {
-            if (conversation.type === "question") {
-              param.messages.push({
-                role: "user",
-                content: conversation.content,
-              });
-            } else if (conversation.type === "answer" && conversation.content) {
-              param.messages.push({
-                role: "assistant",
-                content: conversation.content,
-              });
-            }
-          });
-          this.stopGenerated = requestApi(param);
-        } catch (error) {
-          this.promptValue = this.promptValue ? this.promptValue : content;
-          answer.type = "error";
-          answer.content = error.message;
-          this.isLoadingChat = false;
-        }
-        this.$nextTick(() => {
-          this.$refs.wrap.scrollTo(0, this.$refs.wrap.scrollHeight);
+        let requestApi = api[this.api];
+        let messages = [];
+        let list = this.conversationList.slice(-(2 * 5)); // 获取最后5次对话
+        list.forEach((conversation) => {
+          if (conversation.type === "question") {
+            messages.push({
+              role: "user",
+              content: conversation.content,
+            });
+          } else if (conversation.type === "answer" && conversation.content) {
+            messages.push({
+              role: "assistant",
+              content: conversation.content,
+            });
+          }
         });
+        let request = requestApi(messages);
+        this.stopGenerated = request.abort;
+        try {
+          let es = await request.fetch();
+          let decoder = new TextDecoder("utf-8");
+          let reader = es.body.getReader();
+          let res = await reader?.read();
+          let dataStringList = decoder.decode(res.value).split("data: ");
+          answer.content = dataStringList?.[0];
+        } catch (error) {
+          if (error.message.includes("abort")) {
+            this.$toast("已中止请求");
+            if (!answer.content) {
+              answer.type = "error";
+              answer.content = "已手动中止请求";
+            }
+          } else {
+            this.promptValue = this.promptValue ? this.promptValue : content;
+            answer.type = "error";
+            answer.content = error.message;
+            this.isLoadingChat = false;
+          }
+        }
+        this.isLoadingChat = false;
       }
     },
     recommit() {

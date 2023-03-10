@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     initMenu() {
-      let children = this.$router.options.routes?.[0].children;
+      let children = this.$router.options.routes?.[1]?.children || []   ;
       children.forEach((child) => {
         this.menuList.push({
           title: child.meta.title,
