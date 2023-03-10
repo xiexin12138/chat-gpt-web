@@ -158,6 +158,7 @@ function parse(str) {
   try {
     return JSON.parse(str);
   } catch (err) {
+    console.log("🚀 ~ file: index.js:161 ~ parse ~ err:", str)
     return {};
   }
 }
