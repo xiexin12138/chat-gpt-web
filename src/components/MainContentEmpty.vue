@@ -1,6 +1,5 @@
 <template>
   <div class="demo-list">
-    <h1 class="text-color">{{ title }}</h1>
     <div class="demo-block">
       <h2 class="demo-block-title">
         <svg
@@ -123,6 +122,7 @@
 <script>
 import { Button } from "vant";
 export default {
+  name: "MainContentEmpty",
   components: { VanButton: Button },
   props: {
     title: {

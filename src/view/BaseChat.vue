@@ -1,14 +1,5 @@
 <template>
   <div ref="wrap" style="height: 100vh; overflow: scroll">
-    <van-nav-bar
-      :title="conversationList.length > 0 ? title : ''"
-      style="position: fixed; top: 0; left: 0; width: 100%"
-      @click-left="toShowNav"
-    >
-      <template #left>
-        <van-icon name="apps-o" size="18" color="black" />
-      </template>
-    </van-nav-bar>
     <div style="padding-top: 40px; padding-bottom: 150px; overflow: scroll">
       <MainContent
         :loading="isLoadingChat"
@@ -16,7 +7,6 @@
         v-show="conversationList.length > 0"
       />
       <MainContentEmpty
-        :title="title"
         v-show="conversationList.length === 0"
         :type="type"
         @commit="commit"
@@ -49,34 +39,23 @@
         </div>
       </div>
     </div>
-    <van-popup
-      v-model="showNav"
-      position="left"
-      :style="{ width: '70%', height: '100%' }"
-    >
-      <LeftSide @go="go"></LeftSide>
-    </van-popup>
   </div>
 </template>
 
 <script>
 import api from "@/api/index";
-import { Field, Button, NavBar, Popup } from "vant";
+import { Field, Button } from "vant";
 import MainContentEmpty from "@/components/MainContentEmpty.vue";
 import MainContent from "@/components/MainContent.vue";
-import LeftSide from "@/components/LeftSide.vue";
 
 export default {
   name: "BaseChat",
   components: {
     // NavBar
     Field,
-    LeftSide,
     MainContent,
     VanButton: Button,
     MainContentEmpty,
-    VanNavBar: NavBar,
-    VanPopup: Popup,
   },
   props: {
     title: {
@@ -134,21 +113,6 @@ export default {
         // 如果是 ctrl+enter 或 command+enter 就发送请求
         this.commit(this.promptValue);
       }
-    },
-    go(obj) {
-      if (this.$route.name !== obj.name) {
-        this.$router.push({
-          name: obj.name,
-        });
-      }
-      this.conversationList = [];
-      this.showNav = false;
-    },
-    toShowNav() {
-      if (this.isLoadingChat) {
-        return this.$toast("正在获取答案，请稍候");
-      }
-      this.showNav = true;
     },
     async commit(content) {
       if (!this.isLoadingChat && !content) {

@@ -35,6 +35,19 @@ const routes = [
           return { title, type, api };
         },
       },
+      {
+        path: "updateLog",
+        name: "updateLog",
+        component: () => import("@/view/UpdateLog.vue"),
+        meta: { title: "更新日志" },
+        props: (router) => {
+          let {
+            meta: { title },
+            name: type,
+          } = router;
+          return { title, type };
+        },
+      },
     ],
   },
 ];
