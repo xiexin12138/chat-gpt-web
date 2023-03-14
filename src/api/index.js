@@ -110,7 +110,6 @@ function completionFromOpenAI({
   fetch(`${BASE_URL}${apiName}`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${env.KEY}`,
       ...headers,
     },
     method: "POST",
