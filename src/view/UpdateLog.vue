@@ -41,6 +41,11 @@ export default {
     return {
       updateList: [
         {
+          title: "V 0.0.5",
+          date: "2023-03-14",
+          contentList: ["新增图片生成功能。"],
+        },
+        {
           title: "V 0.0.4",
           date: "2023-03-09",
           contentList: [

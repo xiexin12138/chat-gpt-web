@@ -36,6 +36,19 @@ const routes = [
         },
       },
       {
+        path: "image",
+        name: "image",
+        component: () => import("@/view/ImageGeneration.vue"),
+        meta: { title: "图像生成工具", api: "generateImage" },
+        props: (router) => {
+          let {
+            meta: { title, api },
+            name: type,
+          } = router;
+          return { title, type, api };
+        },
+      },
+      {
         path: "updateLog",
         name: "updateLog",
         component: () => import("@/view/UpdateLog.vue"),

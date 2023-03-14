@@ -1,4 +1,5 @@
 import "whatwg-fetch";
+import axios from "axios";
 import env from "/env.js";
 
 const BASE_URL = env.BASE_URL; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
@@ -46,6 +47,31 @@ function getCodeTextStream({
   });
 }
 
+function generateImage({
+  prompt = "",
+  headers = {},
+  body = {
+    n: 1,
+    size: "1024x1024",
+    response_format: "b64_json", // 'url' or 'b64_json'
+  },
+} = {}) {
+  return axios.post(
+    `${env.BASE_URL}/v1/images/generations`,
+    {
+      prompt,
+      ...body,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: env.KEY ? `Bearer ${env.KEY}` : undefined,
+        ...headers,
+      },
+    }
+  );
+}
+
 function getTurboStream({
   messages,
   resolve = () => {},
@@ -90,7 +116,7 @@ function getTurboStream({
  * @param {Function} param.reject 异常或正常结束时调用，异常时会抛出 error
  * @param {Function} param.abort 手动终止时触发的方法
  * @param {number} param.maxCycleTimes 流式请求最大读取次数，防止死循环，建议默认值即可
- * @returns 
+ * @returns
  */
 function completionFromOpenAI({
   apiName,
@@ -110,6 +136,7 @@ function completionFromOpenAI({
   fetch(`${BASE_URL}${apiName}`, {
     headers: {
       "Content-Type": "application/json",
+      Authorization: env.KEY ? `Bearer ${env.KEY}` : undefined,
       ...headers,
     },
     method: "POST",
@@ -175,11 +202,13 @@ function parse(str) {
   try {
     return JSON.parse(str);
   } catch (err) {
+    console.log("🚀 ~ file: index.js:161 ~ parse ~ err:", str);
     return {};
   }
 }
 
 export default {
-  getCodeTextStream,
   getTurboStream,
+  generateImage,
+  getCodeTextStream,
 };

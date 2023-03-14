@@ -2,7 +2,7 @@
   <div ref="wrap" style="height: 100vh; overflow: scroll">
     <div style="padding-top: 40px; padding-bottom: 150px; overflow: scroll">
       <MainContent
-        :loading="isLoadingChat"
+        :loading="isLoading"
         :conversationList="conversationList"
         v-show="conversationList.length > 0"
       />
@@ -29,7 +29,7 @@
           <template #button>
             <van-button
               @click="commit(promptValue)"
-              :icon="isLoadingChat ? 'stop-circle-o' : 'guide-o'"
+              :icon="isLoading ? 'stop-circle-o' : 'guide-o'"
               type="default"
             />
           </template>
@@ -76,7 +76,7 @@ export default {
       promptValue: "",
       isProfession: false,
       haveSideBar: false,
-      isLoadingChat: false,
+      isLoading: false,
       showNav: false,
       conversationList: [],
       testMsg: "",
@@ -104,7 +104,7 @@ export default {
   },
   methods: {
     sendMessage(event) {
-      if (this.isLoadingChat) {
+      if (this.isLoading) {
         return;
       }
       let isCtrlAndEnter = event?.ctrlKey && event.keyCode === 13;
@@ -115,14 +115,14 @@ export default {
       }
     },
     async commit(content) {
-      if (!this.isLoadingChat && !content) {
+      if (!this.isLoading && !content) {
         return this.$toast("请输入问题");
       }
-      if (this.isLoadingChat) {
-        this.isLoadingChat = false;
+      if (this.isLoading) {
+        this.isLoading = false;
         this.stopGenerated();
       } else {
-        this.isLoadingChat = true;
+        this.isLoading = true;
         this.promptValue = this.promptValue === content ? "" : this.promptValue;
         this.conversationList.push({
           type: "question",
@@ -138,6 +138,7 @@ export default {
           let param = {
             messages: [],
             resolve: (data) => {
+              console.log("🚀 ~ file: BaseChat.vue:173 ~ commit ~ data:", data);
               this.$nextTick(() => {
                 answer.content += data;
                 if (
@@ -149,7 +150,11 @@ export default {
               });
             },
             reject: (result) => {
-              this.isLoadingChat = false;
+              console.log(
+                "🚀 ~ file: BaseChat.vue:169 ~ commit ~ result:",
+                result
+              );
+              this.isLoading = false;
               if (result) {
                 this.promptValue = this.promptValue
                   ? this.promptValue
@@ -185,7 +190,7 @@ export default {
           this.promptValue = this.promptValue ? this.promptValue : content;
           answer.type = "error";
           answer.content = error.message;
-          this.isLoadingChat = false;
+          this.isLoading = false;
         }
         this.$nextTick(() => {
           this.$refs.wrap.scrollTo(0, this.$refs.wrap.scrollHeight);
@@ -202,7 +207,7 @@ export default {
     placeholder() {
       let obj = {
         code: `要用注释把需求括起来, 如: /* 请用JavaScript实现一个深拷贝 */`,
-        chat: "请输入问题",
+        chat: "(请勿输入敏感或涉密信息进行测试)请输入问题",
       };
       return obj[this.type];
     },

@@ -1,12 +1,13 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { Icon, Toast } from "vant";
+import { Icon, Toast, Lazyload } from "vant";
 
 import global from "@/api/global";
 
 Vue.prototype.$global = global;
 
+Vue.use(Lazyload);
 Vue.use(Icon);
 // Vue.use(Toast);
 Vue.prototype.$toast = Toast;
