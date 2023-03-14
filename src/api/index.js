@@ -53,7 +53,7 @@ function generateImage({
   body = {
     n: 1,
     size: "1024x1024",
-    response_format: "b64_json", // 'url' or 'b64_json'
+    response_format: "url", // 'url' or 'b64_json'
   },
 } = {}) {
   return axios.post(
