@@ -45,8 +45,13 @@
             lazy-load
             :src="image.url"
             @load="generationDone"
-            @error="generationDone"
-          ></van-image>
+            @error="loadError"
+            @click="copyUrl(image.url)"
+          >
+            <template v-slot:loading>
+              <van-loading type="spinner" size="20" />
+            </template>
+          </van-image>
         </div>
       </template>
       <van-divider
@@ -92,9 +97,11 @@ import {
   Col,
   Image,
   Dialog,
+  Loading,
 } from "vant";
 import ImageLoading from "@/components/ImageLoading.vue";
 import api from "@/api/index";
+import util from "@/api/util";
 
 export default {
   name: "ImageGeneration",
@@ -109,6 +116,7 @@ export default {
     VanCol: Col,
     VanImage: Image,
     VanDialog: Dialog.Component,
+    VanLoading: Loading,
   },
   data() {
     return {
@@ -136,6 +144,14 @@ export default {
     });
   },
   methods: {
+    copyUrl(url) {
+      util.copy(url);
+      this.$toast("已复制图片链接");
+    },
+    loadError() {
+      this.$toast("哎呀，图片加载失败了");
+      this.generationDone();
+    },
     async generation() {
       if (!this.prompt) {
         return this.$toast("写点什么吧");
@@ -152,7 +168,7 @@ export default {
         this.$toast(error?.response?.data?.error?.message || error.message);
         this.generationDone();
         this.isLoading = false;
-        return
+        return;
       }
       let promise = api.generateImage({ prompt });
       let intervalId = setInterval(() => {
