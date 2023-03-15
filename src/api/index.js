@@ -177,7 +177,14 @@ function completionFromOpenAI({
           reject();
           break;
         }
-        if (dataStringList.length === 2) {
+        if (dataStringList.length === 1) {
+          let obj = parse(dataStringList[0]);
+          if (obj.error.code === "context_length_exceeded") {
+            reject(new Error("输入输出总文本数超出模型能力，尝试修改输入长度、或修改要求、或者再重新尝试一下"));
+          } else {
+            reject(obj.error.message);
+          }
+        } else if (dataStringList.length === 2) {
           let obj = parse(dataStringList[1]);
           resolve(
             obj?.choices?.[0]?.text || obj?.choices?.[0]?.delta?.content || ""
