@@ -61,6 +61,7 @@ function translate(content) {
         content,
       },
     ],
+    temperature: 0,
   });
 }
 

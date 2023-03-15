@@ -62,6 +62,7 @@ const routes = [
         },
       },
     ],
+    redirect: { path: '/chat' }, 
   },
 ];
 
