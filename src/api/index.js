@@ -2,7 +2,7 @@ import "whatwg-fetch";
 import axios from "axios";
 import env from "/env.js";
 
-const BASE_URL = env.BASE_URL; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
+const BASE_URL = process.env.NODE_ENV === "production" ? env.BASE_URL : ""; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
 
 /**
  * 请求答案的
@@ -44,6 +44,23 @@ function getCodeTextStream({
     resolve,
     reject,
     abort,
+  });
+}
+
+function translate(content) {
+  return axios.post(`${env.BASE_URL}/v1/chat/completions`, {
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "system",
+        content:
+          "你是一个专业的翻译助手，只会把任何传发送你的中文直接翻译成英文并返回英文结果回来。禁止返回和翻译结果无关或其他提示性的内容",
+      },
+      {
+        role: "user",
+        content,
+      },
+    ],
   });
 }
 
@@ -211,4 +228,5 @@ export default {
   getTurboStream,
   generateImage,
   getCodeTextStream,
+  translate,
 };

@@ -144,7 +144,17 @@ export default {
       this.canGenerate = false;
       this.percentage = 0;
       let isDone = false;
-      let promise = api.generateImage({ prompt: this.prompt });
+      let prompt = "";
+      try {
+        let response = await api.translate(this.prompt);
+        prompt = response.data.choices[0].message.content;
+      } catch (error) {
+        this.$toast(error?.response?.data?.error?.message || error.message);
+        this.generationDone();
+        this.isLoading = false;
+        return
+      }
+      let promise = api.generateImage({ prompt });
       let intervalId = setInterval(() => {
         if (this.percentage < 80) {
           this.percentage = this.percentage + 0.5;
