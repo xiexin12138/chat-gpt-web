@@ -165,6 +165,31 @@ async function generateImage(prompt) {
   );
 }
 
+function translate(content) {
+  return axios.post(
+    `${env.BASE_URL}/mygpt3/qtext`,
+    {
+      messages: [
+        {
+          role: "system",
+          content:
+            "你是一个专业的翻译助手，只会把任何传发送你的中文直接翻译成英文并返回英文结果回来。禁止返回和翻译结果无关或其他提示性的内容",
+        },
+        {
+          role: "user",
+          content,
+        },
+      ],
+    },
+    {
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+        accept: "json",
+      },
+    }
+  );
+}
+
 function parse(str) {
   try {
     return JSON.parse(str);
@@ -178,4 +203,5 @@ export default {
   getTurboStream,
   getAnswerText,
   generateImage,
+  translate,
 };

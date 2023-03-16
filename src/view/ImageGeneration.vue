@@ -133,6 +133,7 @@ export default {
         name: key.substring(2).replace(/\.(png|jpg|jpeg|gif|webp)$/, ""),
         url: context(key),
       });
+      console.log("🚀 :", key, "||", context(key));
     });
   },
   methods: {
@@ -144,7 +145,17 @@ export default {
       this.canGenerate = false;
       this.percentage = 0;
       let isDone = false;
-      let promise = api.generateImage(this.prompt);
+      let prompt;
+      try {
+        let response = await api.translate(this.prompt);
+        prompt = response.data;
+      } catch (error) {
+        console.log(
+          "🚀 ~ file: ImageGeneration.vue:151 ~ generation ~ error:",
+          error
+        );
+      }
+      let promise = api.generateImage(prompt || this.prompt);
       let count = 0;
       let intervalId = setInterval(() => {
         if (this.percentage < 80) {
