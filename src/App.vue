@@ -44,10 +44,8 @@ export default {
   },
   methods: {
     toShowNav() {
-      const childComponent = this.$children.find(
-        (child) => child.$options.name === "BaseChat"
-      );
-      if (childComponent?.isLoadingChat) {
+      let isLoading = this.$children.some((child) => child?.isLoading);
+      if (isLoading) {
         return this.$toast("正在获取答案，请稍候");
       }
       this.showNav = true;

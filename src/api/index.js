@@ -1,4 +1,5 @@
 import "whatwg-fetch";
+import axios from "axios";
 import env from "/env.js";
 
 const BASE_URL = env.BASE_URL; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
@@ -155,16 +156,13 @@ function completionFromOpenAI({
 }
 
 async function generateImage(prompt) {
-  return fetch(`${env.IMAGE_URL}/user/getChatImage`, {
-    headers: {
-      "Content-Type": "application/json; charset=UTF-8",
-    },
-    method: "POST",
-    body: JSON.stringify({
-      prompt,
-      n: 1,
-    }),
-  });
+  return axios.post(
+    `${env.IMAGE_URL}/user/getChatImage`,
+    encodeURI(`prompt=${prompt}&n=1&size=512x512&response_format=url`),
+    {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    }
+  );
 }
 
 function parse(str) {

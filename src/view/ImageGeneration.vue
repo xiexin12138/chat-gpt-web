@@ -148,22 +148,26 @@ export default {
       let count = 0;
       let intervalId = setInterval(() => {
         if (this.percentage < 80) {
-          this.percentage = this.percentage + 0.5;
+          this.percentage = this.percentage + 1;
         } else if (this.percentage < 96) {
-          this.percentage = this.percentage + 0.2;
+          this.percentage = this.percentage + 0.4;
         } else if (this.percentage < 99) {
-          this.percentage = this.percentage + 0.05;
+          this.percentage = this.percentage + 0.1;
         } else {
           count = count + 100;
           if (count > 60 * 1000) {
-            this.$toast('哎呀，系统繁忙，晚点再试试');
+            this.$toast("哎呀，系统繁忙，晚点再试试");
             this.generationDone();
             this.isLoading = false;
           }
         }
-        promise.then(
-          (result) => {
+        promise
+          .then((result) => {
             if (!isDone) {
+              console.log(
+                "🚀 ~ file: ImageGeneration.vue:193 ~ intervalId ~ result:",
+                result
+              );
               this.percentage = 100;
               isDone = true;
               setTimeout(() => {
@@ -172,14 +176,10 @@ export default {
               }, 500);
             }
             clearInterval(intervalId);
-          },
-          (error) => {
+          })
+          .catch((error) => {
             if (!isDone) {
               isDone = true;
-              console.log(
-                "🚀 ~ file: ImageGeneration.vue:140 ~ intervalId ~ reason:",
-                error
-              );
               this.$toast(
                 error?.response?.data?.error?.message || error.message
               );
@@ -187,8 +187,7 @@ export default {
               this.isLoading = false;
             }
             clearInterval(intervalId);
-          }
-        );
+          });
       }, 1000 * 0.05);
     },
     generationDone() {

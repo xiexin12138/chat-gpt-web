@@ -41,10 +41,16 @@ export default {
     return {
       updateList: [
         {
+          title: "V 0.0.2",
+          date: "2023-03-16",
+          contentList:[
+            '新增支持图像生成功能。'
+          ]},
+        {
           title: "V 0.0.1",
           date: "2023-03-10",
           contentList: [
-            "使用最新的ChatGPT同款模型。",
+            "使用最新的ChatGPT3.5同款模型。",
             "新增支持记住最近5次对话内容的聊天。",
             "支持通过cmd+enter或ctrl+enter输入问题。",
             "支持手动中止答案输出。",
