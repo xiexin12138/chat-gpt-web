@@ -144,7 +144,7 @@ export default {
       this.canGenerate = false;
       this.percentage = 0;
       let isDone = false;
-      let promise = api.generateImage({ prompt: this.prompt });
+      let promise = api.generateImage(this.prompt);
       let count = 0;
       let intervalId = setInterval(() => {
         if (this.percentage < 80) {

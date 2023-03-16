@@ -154,11 +154,24 @@ function completionFromOpenAI({
   };
 }
 
+async function generateImage(prompt) {
+  return fetch(`${env.IMAGE_URL}/user/getChatImage`, {
+    headers: {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    method: "POST",
+    body: JSON.stringify({
+      prompt,
+      n: 1,
+    }),
+  });
+}
+
 function parse(str) {
   try {
     return JSON.parse(str);
   } catch (err) {
-    console.log("🚀 ~ file: index.js:161 ~ parse ~ err:", str)
+    console.log("🚀 ~ file: index.js:161 ~ parse ~ err:", str);
     return {};
   }
 }
@@ -166,4 +179,5 @@ function parse(str) {
 export default {
   getTurboStream,
   getAnswerText,
+  generateImage,
 };

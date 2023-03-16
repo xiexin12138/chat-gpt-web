@@ -6,7 +6,7 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    redirect: '/chat'
+    redirect: "/chat",
   },
   {
     path: "/",
@@ -26,19 +26,19 @@ const routes = [
           return { title, type, api };
         },
       },
-      // {
-      //   path: "code",
-      //   name: "code",
-      //   component: () => import("@/view/BaseChat.vue"),
-      //   meta: { title: "代码生成工具", api: "getCodeTextStream" },
-      //   props: (router) => {
-      //     let {
-      //       meta: { title, api },
-      //       name: type,
-      //     } = router;
-      //     return { title, type, api };
-      //   },
-      // },
+      {
+        path: "image",
+        name: "image",
+        component: () => import("@/view/ImageGeneration.vue"),
+        meta: { title: "图像生成工具", api: "generateImage" },
+        props: (router) => {
+          let {
+            meta: { title, api },
+            name: type,
+          } = router;
+          return { title, type, api };
+        },
+      },
       {
         path: "updateLog",
         name: "updateLog",
