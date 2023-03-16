@@ -180,7 +180,7 @@ function completionFromOpenAI({
         if (dataStringList.length === 1) {
           let obj = parse(dataStringList[0]);
           if (obj.error.code === "context_length_exceeded") {
-            reject(new Error("输入输出总文本数超出模型能力，尝试修改输入长度、或修改要求、或者再重新尝试一下"));
+            reject(new Error("输入输出总文本数超出模型能力，尝试修改输入长度、或修改要求、或者再重新生成一下"));
           } else {
             reject(obj.error.message);
           }
