@@ -51,11 +51,11 @@ function translate(content) {
   return axios.post(`${env.BASE_URL}/v1/chat/completions`, {
     model: "gpt-3.5-turbo",
     messages: [
-      {
-        role: "system",
-        content:
-          "你是一个专业的翻译助手，只会把任何传发送你的中文直接翻译成英文并返回英文结果回来。禁止返回和翻译结果无关或其他提示性的内容",
-      },
+      // {
+      //   role: "system",
+      //   content:
+      //     "你是一个专业的翻译助手，只会把任何传发送你的中文直接翻译成英文并返回英文结果回来。禁止返回和翻译结果无关或其他提示性的内容",
+      // },
       {
         role: "user",
         content,
@@ -177,14 +177,15 @@ function completionFromOpenAI({
           reject();
           break;
         }
-        if (dataStringList.length === 1) {
-          let obj = parse(dataStringList[0]);
-          if (obj.error.code === "context_length_exceeded") {
-            reject(new Error("输入输出总文本数超出模型能力，尝试修改输入长度、或修改要求、或者再重新生成一下"));
-          } else {
-            reject(obj.error.message);
-          }
-        } else if (dataStringList.length === 2) {
+        // if (dataStringList.length === 1) {
+        //   let obj = parse(dataStringList[0]);
+        //   if (obj.error.code === "context_length_exceeded") {
+        //     reject(new Error("输入输出总文本数超出模型能力，尝试修改输入长度、或修改要求、或者再重新生成一下"));
+        //   } else {
+        //     reject(obj.error.message);
+        //   }
+        // } else 
+        if (dataStringList.length === 2) {
           let obj = parse(dataStringList[1]);
           resolve(
             obj?.choices?.[0]?.text || obj?.choices?.[0]?.delta?.content || ""
