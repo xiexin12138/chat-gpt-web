@@ -41,6 +41,11 @@ export default {
     return {
       updateList: [
         {
+          title: "V 0.0.7",
+          date: "2023-03-21",
+          contentList: ["解决掉输出漏字的问题。"],
+        },
+        {
           title: "V 0.0.6",
           date: "2023-03-15",
           contentList: ["优化图片生成效果。"],

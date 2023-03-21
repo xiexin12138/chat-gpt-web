@@ -150,10 +150,6 @@ export default {
               });
             },
             reject: (result) => {
-              console.log(
-                "🚀 ~ file: BaseChat.vue:169 ~ commit ~ result:",
-                result
-              );
               this.isLoading = false;
               if (result) {
                 this.promptValue = this.promptValue
