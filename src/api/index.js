@@ -2,7 +2,7 @@ import "whatwg-fetch";
 import axios from "axios";
 import env from "/env.js";
 
-const code = "/ajosdf72389234";
+const code = env.RANDOM_CODE;
 const BASE_URL =
   process.env.NODE_ENV === "production" ? env.BASE_URL + code : code; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
 

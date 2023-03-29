@@ -10,12 +10,12 @@ let config = defineConfig({
         args[0].terserOptions.compress.drop_console = true;
         args[0].terserOptions.compress.drop_debugger = true;
         return args;
-      }); 
+      });
     }
   },
   devServer: {
     proxy: {
-      "^/ajosdf72389234/v1": {
+      [`^${env.RANDOM_CODE}/v1`]: {
         target: env.BASE_URL,
       },
     },
