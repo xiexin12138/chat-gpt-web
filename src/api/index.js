@@ -2,7 +2,9 @@ import "whatwg-fetch";
 import axios from "axios";
 import env from "/env.js";
 
-const BASE_URL = process.env.NODE_ENV === "production" ? env.BASE_URL : ""; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
+const code = "/ajosdf72389234";
+const BASE_URL =
+  process.env.NODE_ENV === "production" ? env.BASE_URL + code : code; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
 
 /**
  * 请求答案的
@@ -23,7 +25,7 @@ function getCodeTextStream({
   let today = new Date();
   let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
   return completionFromOpenAI({
-    apiName: "/v1/chat/completions",
+    apiName: `${BASE_URL}/v1/chat/completions`,
     body: {
       model: "gpt-3.5-turbo",
       ...param,
@@ -48,7 +50,7 @@ function getCodeTextStream({
 }
 
 function translate(content) {
-  return axios.post(`${env.BASE_URL}/v1/chat/completions`, {
+  return axios.post(`${BASE_URL}/v1/chat/completions`, {
     model: "gpt-3.5-turbo",
     messages: [
       {
@@ -70,12 +72,12 @@ function generateImage({
   headers = {},
   body = {
     n: 1,
-    size: "1024x1024",
+    size: "512x512",
     response_format: "url", // 'url' or 'b64_json'
   },
 } = {}) {
   return axios.post(
-    `${env.BASE_URL}/v1/images/generations`,
+    `${BASE_URL}/v1/images/generations`,
     {
       prompt,
       ...body,
@@ -100,7 +102,7 @@ function getTurboStream({
   let today = new Date();
   let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
   return completionFromOpenAI({
-    apiName: "/v1/chat/completions",
+    apiName: `/v1/chat/completions`,
     body: {
       model: "gpt-3.5-turbo",
       ...param,

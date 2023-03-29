@@ -21,7 +21,7 @@
           label-class="left-label"
           show-word-limit
           size="large"
-          maxlength="1000"
+          maxlength="1500"
           type="textarea"
           row="3"
           border
