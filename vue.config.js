@@ -15,7 +15,7 @@ let config = defineConfig({
   },
   devServer: {
     proxy: {
-      "^/v1": {
+      "^/ajosdf72389234/v1": {
         target: env.BASE_URL,
       },
     },
