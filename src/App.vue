@@ -6,10 +6,10 @@
       @click-left="toShowNav"
     >
       <template #left>
-        <van-icon name="apps-o" size="18" color="black" />
+        <van-icon name="apps-o" size="18" color="black" dot />
       </template>
     </van-nav-bar>
-    <router-view></router-view>
+    <router-view :key="$route.fullPath" />
     <van-popup
       v-model="showNav"
       position="left"

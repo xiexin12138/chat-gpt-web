@@ -4,20 +4,34 @@ import env from "/env.js";
 
 const BASE_URL = env.BASE_URL; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
 
-function getAnswerText(messages) {
+function getAnswerText({ messages, systemContent }) {
   let signal, controller;
   if (AbortController) {
     controller = new AbortController();
     signal = controller.signal;
   }
   function innerFetch() {
+    let today = new Date();
+    let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
     return fetch(`${env.BASE_URL}/mygpt3/qtext`, {
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
       },
       method: "POST",
       body: JSON.stringify({
-        messages,
+        messages: [
+          {
+            role: "system",
+            content: systemContent
+              ? systemContent
+              : `你是一个全方位能力都很强大的AI人工智能助手，你知识库的截止日期是${yesterday.getFullYear()}年${
+                  yesterday.getMonth() + 1
+                }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
+                  today.getMonth() + 1
+                }月${today.getDate()}日`,
+          },
+          ...messages,
+        ],
       }),
       signal,
     });
@@ -32,6 +46,7 @@ function getAnswerText(messages) {
 
 function getTurboStream({
   messages,
+  systemContent,
   resolve = () => {},
   reject = () => {},
   abort = () => {},
@@ -48,11 +63,13 @@ function getTurboStream({
       messages: [
         {
           role: "system",
-          content: `你是一个全方位能力都很强大的AI人工智能助手，你知识库的截止日期是${yesterday.getFullYear()}年${
-            yesterday.getMonth() + 1
-          }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
-            today.getMonth() + 1
-          }月${today.getDate()}日`,
+          content: systemContent
+            ? systemContent
+            : `你是一个全方位能力都很强大的AI人工智能助手，你知识库的截止日期是${yesterday.getFullYear()}年${
+                yesterday.getMonth() + 1
+              }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
+                today.getMonth() + 1
+              }月${today.getDate()}日`,
         },
         ...messages,
       ],
@@ -158,7 +175,7 @@ function completionFromOpenAI({
 async function generateImage(prompt) {
   return axios.post(
     `${env.IMAGE_URL}/user/getChatImage`,
-    encodeURI(`prompt=${prompt}&n=1&size=512x512&response_format=url`),
+    encodeURI(`prompt=${prompt}&n=2&size=512x512&response_format=url`),
     {
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     }
@@ -192,7 +209,7 @@ function translate(content) {
 
 async function addWatermark(data) {
   return axios({
-    url: `${env.BASE_URL}/watermark/addWatermark`,
+    url: `${env.WATER_MARK_BASE_URL}/watermark/addWatermark`,
     method: "post",
     data,
     headers: {
@@ -202,7 +219,7 @@ async function addWatermark(data) {
 }
 async function extractWatermark(data) {
   return axios({
-    url: `${env.BASE_URL}/watermark/extractWatermark`,
+    url: `${env.WATER_MARK_BASE_URL}/watermark/extractWatermark`,
     method: "post",
     data,
     headers: {

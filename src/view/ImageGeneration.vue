@@ -129,11 +129,12 @@ export default {
       /\.(png|jpg|jpeg|gif|webp)$/
     );
     context.keys().forEach((key) => {
+      console.log("🚀 context.resolve:", context.resolve(key));
+      console.log("🚀 context:", context(key));
       this.demoList.push({
         name: key.substring(2).replace(/\.(png|jpg|jpeg|gif|webp)$/, ""),
         url: context(key),
       });
-      console.log("🚀 :", key, "||", context(key));
     });
   },
   methods: {
@@ -159,7 +160,7 @@ export default {
       let count = 0;
       let intervalId = setInterval(() => {
         if (this.percentage < 80) {
-          this.percentage = this.percentage + 1;
+          this.percentage = this.percentage + 0.5;
         } else if (this.percentage < 96) {
           this.percentage = this.percentage + 0.4;
         } else if (this.percentage < 99) {

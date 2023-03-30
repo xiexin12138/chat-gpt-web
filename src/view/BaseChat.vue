@@ -8,6 +8,7 @@
       />
       <MainContentEmpty
         v-show="conversationList.length === 0"
+        :demoBtnList="demoBtnList"
         :type="type"
         @commit="commit"
       />
@@ -21,7 +22,6 @@
           label-class="left-label"
           show-word-limit
           size="large"
-          maxlength="1000"
           type="textarea"
           row="3"
           border
@@ -69,6 +69,26 @@ export default {
     api: {
       type: String,
       required: true,
+    },
+    conversationTimes: {
+      type: Number,
+      default: 5,
+    },
+    systemContent: {
+      type: String,
+      default: "",
+    },
+    demoBtnList: {
+      type: Array,
+      default: () => [],
+    },
+    placeholder: {
+      type: String,
+      default: "(请勿输入敏感或涉密信息进行测试)请输入内容",
+    },
+    prefix: {
+      type: String,
+      default: "",
     },
   },
   data() {
@@ -135,12 +155,12 @@ export default {
         let answer = this.conversationList[this.conversationList.length - 1];
         let requestApi = api[this.api];
         let messages = [];
-        let list = this.conversationList.slice(-(2 * 5)); // 获取最后5次对话
+        let list = this.conversationList.slice(-(2 * this.conversationTimes)); // 获取最后5次对话
         list.forEach((conversation) => {
           if (conversation.type === "question") {
             messages.push({
               role: "user",
-              content: conversation.content,
+              content: this.prefix + conversation.content,
             });
           } else if (conversation.type === "answer" && conversation.content) {
             messages.push({
@@ -149,7 +169,10 @@ export default {
             });
           }
         });
-        let request = requestApi(messages);
+        let request = requestApi({
+          messages,
+          systemContent: this.systemContent,
+        });
         this.stopGenerated = request.abort;
         try {
           let es = await request.fetch();
@@ -179,15 +202,6 @@ export default {
       this.conversationList.pop();
       let question = this.conversationList.pop().content;
       this.commit(question);
-    },
-  },
-  computed: {
-    placeholder() {
-      let obj = {
-        code: `要用注释把需求括起来, 如: /* 请用JavaScript实现一个深拷贝 */`,
-        chat: "(请勿输入敏感或涉密信息进行测试)请输入问题",
-      };
-      return obj[this.type];
     },
   },
 };
