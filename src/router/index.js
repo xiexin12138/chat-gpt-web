@@ -40,6 +40,32 @@ const routes = [
         },
       },
       {
+        path: "watermark",
+        name: "watermark",
+        component: () => import("@/view/Watermark.vue"),
+        meta: { title: "盲水印" },
+        props: (router) => {
+          let {
+            meta: { title },
+            name: type,
+          } = router;
+          return { title, type };
+        },
+      },
+      {
+        path: "extractWaterMark",
+        name: "ExtractWaterMark",
+        component: () => import("@/view/ExtractWaterMark.vue"),
+        meta: { title: "提取水印" },
+        props: (router) => {
+          let {
+            meta: { title },
+            name: type,
+          } = router;
+          return { title, type };
+        },
+      },
+      {
         path: "updateLog",
         name: "updateLog",
         component: () => import("@/view/UpdateLog.vue"),

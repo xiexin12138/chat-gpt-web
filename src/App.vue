@@ -33,6 +33,13 @@ export default {
     VanNavBar: NavBar,
     VanPopup: Popup,
   },
+  watch: {
+    $route(to) {
+      if (to.meta.title) {
+        this.title = to.meta.title;
+      }
+    },
+  },
   data() {
     return {
       title: "",
