@@ -1,6 +1,6 @@
 <template>
   <div class="demo-list">
-    <div class="demo-block">
+    <div class="demo-block" v-show="demoBtnList.length > 0">
       <h2 class="demo-block-title">
         <svg
           stroke="currentColor"
@@ -28,7 +28,7 @@
       </h2>
       <div
         class="demo-button"
-        v-for="(item, index) in demoQuestionList"
+        v-for="(item, index) in demoBtnList"
         :key="index"
       >
         <van-button
@@ -64,7 +64,7 @@
       </h2>
       <div class="demo-button">
         <van-button color="rgb(247, 247, 248)" block style="color: black"
-          >记得用户之前在最近5次对话中说过什么
+          >记得用户之前在最近的对话中说过什么
         </van-button>
       </div>
       <div class="demo-button">
@@ -132,6 +132,10 @@ export default {
     type: {
       type: String,
       required: true,
+    },
+    demoBtnList: {
+      type: Array,
+      default: () => [],
     },
   },
   methods: {

@@ -6,10 +6,10 @@
       @click-left="toShowNav"
     >
       <template #left>
-        <van-icon name="apps-o" size="18" color="black" />
+        <van-icon name="apps-o" size="18" color="black" :dot="showNew" />
       </template>
     </van-nav-bar>
-    <router-view></router-view>
+    <router-view style="margin-top:50px;height: 100vh;background-color:rgb(247, 248, 250)" :key="$route.fullPath" />
     <van-popup
       v-model="showNav"
       position="left"
@@ -24,6 +24,7 @@
 import "@/assets/index.css";
 import { NavBar, Popup } from "vant";
 import LeftSide from "@/components/LeftSide.vue";
+import log from "@/assets/log.json";
 
 export default {
   name: "App",
@@ -37,19 +38,45 @@ export default {
     return {
       title: "",
       showNav: false,
+      showNew: false,
     };
   },
   mounted() {
-    console.log(this.$route);
     this.title = this.$route.meta.title;
+    this.checkIsNeedShowNew();
   },
   methods: {
+    checkIsNeedShowNew() {
+      let gptVersion = localStorage.getItem("GPT_Version");
+      if (!gptVersion) {
+        this.showNew = true;
+      } else {
+        let timestamps = Date.parse(log?.[0]?.date);
+        console.log(
+          "🚀 ~ file: App.vue:56 ~ checkIsNeedShowNew ~ Number.parseInt(date) > Number.parseInt(gptVersion):",
+          Number.parseInt(timestamps),
+          Number.parseInt(gptVersion)
+        );
+        if (Number.parseInt(timestamps) > Number.parseInt(gptVersion)) {
+          this.showNew = true;
+          localStorage.setItem("GPT_Version", timestamps);
+        } else {
+          this.showNew = false;
+        }
+      }
+    },
+    hideNeedShowNew() {
+      this.showNew = false;
+      let date = log?.[0]?.date;
+      localStorage.setItem("GPT_Version", Date.parse(date));
+    },
     toShowNav() {
       let isLoading = this.$children.some((child) => child?.isLoading);
       if (isLoading) {
         return this.$toast("正在获取答案，请稍候");
       }
       this.showNav = true;
+      this.hideNeedShowNew();
     },
     go(obj) {
       if (this.$route.name !== obj.name) {

@@ -94,6 +94,7 @@ function generateImage({
 
 function getTurboStream({
   messages,
+  systemContent,
   resolve = () => {},
   reject = () => {},
   abort = () => {},
@@ -110,11 +111,13 @@ function getTurboStream({
       messages: [
         {
           role: "system",
-          content: `你是一个全方位能力都很强大的AI人工智能助手，你知识库的截止日期是${yesterday.getFullYear()}年${
-            yesterday.getMonth() + 1
-          }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
-            today.getMonth() + 1
-          }月${today.getDate()}日`,
+          content: systemContent
+            ? systemContent
+            : `你是一个全方位能力都很强大的AI人工智能助手，你知识库的截止日期是${yesterday.getFullYear()}年${
+                yesterday.getMonth() + 1
+              }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
+                today.getMonth() + 1
+              }月${today.getDate()}日`,
         },
         ...messages,
       ],

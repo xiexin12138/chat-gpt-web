@@ -15,7 +15,9 @@
         label-class="pre-wrap"
       >
         <template #title>
-          <span class="custom-title">{{ item.title }} | {{ item.date }} </span>
+          <span class="custom-title"
+            >V {{ item.version }} | {{ item.date }}
+          </span>
           <van-tag
             v-if="index === 0 || item.isNew"
             type="danger"
@@ -30,6 +32,8 @@
 
 <script>
 import { Cell, CellGroup, Tag } from "vant";
+import log from "@/assets/log.json";
+
 export default {
   name: "UpdateLog",
   components: {
@@ -39,54 +43,7 @@ export default {
   },
   data() {
     return {
-      updateList: [
-        {
-          title: "V 0.0.7",
-          date: "2023-03-21",
-          contentList: ["解决掉输出漏字的问题。"],
-        },
-        {
-          title: "V 0.0.6",
-          date: "2023-03-15",
-          contentList: ["优化图片生成效果。"],
-        },
-        {
-          title: "V 0.0.5",
-          date: "2023-03-14",
-          contentList: ["新增图片生成功能。"],
-        },
-        {
-          title: "V 0.0.4",
-          date: "2023-03-09",
-          contentList: [
-            "新增支持当记录拉到最底并有新数据插入时自动滚动。",
-            "支持通过cmd+enter或ctrl+enter输入问题。",
-            "加入更新日志记录。",
-          ],
-        },
-        {
-          title: "V 0.0.3",
-          date: "2023-03-05",
-          contentList: [
-            "使用最新的ChatGPT同款模型。",
-            "新增支持记住最近5次对话内容的聊天。",
-            "支持手动中止答案输出。",
-            "新增复制答案的按钮。",
-          ],
-        },
-        {
-          title: "V 0.0.2",
-          date: "2023-03-01",
-          contentList: [
-            "新增支持流式返回，让答案在接收的过程中看起来像在打字回答问题一样。",
-          ],
-        },
-        {
-          title: "V 0.0.1",
-          date: "2023-02-23",
-          contentList: ["新增支持聊天和代码提问。"],
-        },
-      ],
+      updateList: log,
     };
   },
   filters: {

@@ -1,6 +1,6 @@
 <template>
-  <div ref="wrap" style="height: 100vh; overflow: scroll">
-    <div style="padding-top: 40px; padding-bottom: 150px; overflow: scroll">
+  <div ref="wrap" style="height: calc(100vh - 200px); overflow: scroll">
+    <div style="padding-bottom: 150px;overflow: scroll">
       <MainContent
         :loading="isLoading"
         :conversationList="conversationList"
@@ -8,6 +8,7 @@
       />
       <MainContentEmpty
         v-show="conversationList.length === 0"
+        :demoBtnList="demoBtnList"
         :type="type"
         @commit="commit"
       />
@@ -21,7 +22,7 @@
           label-class="left-label"
           show-word-limit
           size="large"
-          maxlength="1500"
+          maxlength="2000"
           type="textarea"
           row="3"
           border
@@ -69,6 +70,26 @@ export default {
     api: {
       type: String,
       required: true,
+    },
+    conversationTimes: {
+      type: Number,
+      default: 5,
+    },
+    systemContent: {
+      type: String,
+      default: "",
+    },
+    demoBtnList: {
+      type: Array,
+      default: () => [],
+    },
+    placeholder: {
+      type: String,
+      default: "(请勿输入敏感或涉密信息进行测试)请输入内容",
+    },
+    prefix: {
+      type: String,
+      default: "",
     },
   },
   data() {
@@ -133,12 +154,27 @@ export default {
           content: "",
         });
         let answer = this.conversationList[this.conversationList.length - 1];
+        let messages = [];
+        let list = this.conversationList.slice(-(2 * this.conversationTimes)); // 获取最后5次对话
+        list.forEach((conversation) => {
+          if (conversation.type === "question") {
+            messages.push({
+              role: "user",
+              content: this.prefix + conversation.content,
+            });
+          } else if (conversation.type === "answer" && conversation.content) {
+            messages.push({
+              role: "assistant",
+              content: conversation.content,
+            });
+          }
+        });
         try {
           let requestApi = api[this.api];
           let param = {
-            messages: [],
+            messages,
+            systemContent: this.systemContent,
             resolve: (data) => {
-              console.log("🚀 ~ file: BaseChat.vue:173 ~ commit ~ data:", data);
               this.$nextTick(() => {
                 answer.content += data;
                 if (
@@ -167,20 +203,6 @@ export default {
               }
             },
           };
-          let list = this.conversationList.slice(-(2 * 5)); // 获取最后5次对话
-          list.forEach((conversation) => {
-            if (conversation.type === "question") {
-              param.messages.push({
-                role: "user",
-                content: conversation.content,
-              });
-            } else if (conversation.type === "answer" && conversation.content) {
-              param.messages.push({
-                role: "assistant",
-                content: conversation.content,
-              });
-            }
-          });
           this.stopGenerated = requestApi(param);
         } catch (error) {
           this.promptValue = this.promptValue ? this.promptValue : content;
@@ -197,15 +219,6 @@ export default {
       this.conversationList.pop();
       let question = this.conversationList.pop().content;
       this.commit(question);
-    },
-  },
-  computed: {
-    placeholder() {
-      let obj = {
-        code: `要用注释把需求括起来, 如: /* 请用JavaScript实现一个深拷贝 */`,
-        chat: "(请勿输入敏感或涉密信息进行测试)请输入问题",
-      };
-      return obj[this.type];
     },
   },
 };
