@@ -18,7 +18,7 @@
         content-position="left"
         >文案内容</van-divider
       >
-      <div style="margin: 16px 16px 0 16px">
+      <div style="margin: 16px 16px 0 16px；white-space: pre-wrap">
         {{ result }}<BlinkBlock v-show="isLoading" />
       </div>
     </template>

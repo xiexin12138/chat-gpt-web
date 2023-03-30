@@ -4,7 +4,6 @@
       height: 100vh;
       width: 100vw;
       background-color: rgb(247, 248, 250);
-      padding-top: 60px;
     "
   >
     <van-cell-group inset style="">

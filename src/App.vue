@@ -9,7 +9,7 @@
         <van-icon name="apps-o" size="18" color="black" :dot="showNew" />
       </template>
     </van-nav-bar>
-    <router-view style="margin-top:50px;height: 100vh;background-color:rgb(247, 248, 250)" :key="$route.fullPath" />
+    <router-view style="padding-top:30px;height: 100vh;background-color:rgb(247, 248, 250)" :key="$route.fullPath" />
     <van-popup
       v-model="showNav"
       position="left"
