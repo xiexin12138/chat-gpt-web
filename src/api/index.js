@@ -190,6 +190,27 @@ function translate(content) {
   );
 }
 
+async function addWatermark(data) {
+  return axios({
+    url: `${env.BASE_URL}/watermark/addWatermark`,
+    method: "post",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+async function extractWatermark(data) {
+  return axios({
+    url: `${env.BASE_URL}/watermark/extractWatermark`,
+    method: "post",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
 function parse(str) {
   try {
     return JSON.parse(str);
@@ -204,4 +225,6 @@ export default {
   getAnswerText,
   generateImage,
   translate,
+  addWatermark,
+  extractWatermark,
 };
