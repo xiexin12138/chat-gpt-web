@@ -9,7 +9,7 @@
         <van-icon name="apps-o" size="18" color="black" :dot="showNew" />
       </template>
     </van-nav-bar>
-    <router-view style="padding-top:30px;height: 100vh;background-color:rgb(247, 248, 250)" :key="$route.fullPath" />
+    <router-view style="padding-top:25px;height: calc(100vh-50px);" :key="$route.fullPath" />
     <van-popup
       v-model="showNav"
       position="left"
@@ -52,11 +52,6 @@ export default {
         this.showNew = true;
       } else {
         let timestamps = Date.parse(log?.[0]?.date);
-        console.log(
-          "🚀 ~ file: App.vue:56 ~ checkIsNeedShowNew ~ Number.parseInt(date) > Number.parseInt(gptVersion):",
-          Number.parseInt(timestamps),
-          Number.parseInt(gptVersion)
-        );
         if (Number.parseInt(timestamps) > Number.parseInt(gptVersion)) {
           this.showNew = true;
           localStorage.setItem("GPT_Version", timestamps);

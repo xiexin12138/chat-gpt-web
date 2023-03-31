@@ -132,7 +132,7 @@ export default {
   },
   mounted() {
     const context = require.context(
-      "@/assets/image",
+      "@/assets/demoImgs",
       true,
       /\.(png|jpg|jpeg|gif|webp)$/
     );

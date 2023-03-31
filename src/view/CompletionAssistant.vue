@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="background-color:rgb(247, 248, 250)">
     <van-cell-group>
       <van-field
         v-for="(item, index) in fieldList"
@@ -18,7 +18,7 @@
         content-position="left"
         >文案内容</van-divider
       >
-      <div style="margin: 16px 16px 0 16px；white-space: pre-wrap">
+      <div style="margin: 16px 16px 0 16px;white-space: pre-wrap">
         {{ result }}<BlinkBlock v-show="isLoading" />
       </div>
     </template>

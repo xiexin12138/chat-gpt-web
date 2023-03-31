@@ -13,13 +13,16 @@
       >
         <van-icon name="arrow" />
         {{ item.title }}
+        <van-tag v-if="item.tagText" type="danger" style="margin-left: 5px">{{
+          item.tagText
+        }}</van-tag>
       </van-cell>
     </van-list>
   </div>
 </template>
 
 <script>
-import { List, Cell, Divider } from "vant";
+import { List, Cell, Divider, Tag } from "vant";
 
 export default {
   name: "LeftSide",
@@ -27,6 +30,7 @@ export default {
     VanList: List,
     VanCell: Cell,
     VanDivider: Divider,
+    VanTag: Tag,
   },
   data() {
     return {
@@ -40,10 +44,15 @@ export default {
     initMenu() {
       let children = this.$router.options.routes?.[0].children;
       children.forEach((child) => {
+        console.log(
+          "🚀 ~ file: LeftSide.vue:53 ~ children.forEach ~ child:",
+          child
+        );
         this.menuList.push({
           title: child.meta.title,
           name: child.name,
           api: child.meta.api,
+          tagText: child.meta.tagText,
         });
       });
     },

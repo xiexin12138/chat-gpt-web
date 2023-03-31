@@ -35,7 +35,8 @@ const routes = [
         meta: {
           title: "大众点评",
           api: "getTurboStream",
-          systemContent:"你是一个美食点评助手。你善于对美食进行点评，你应该在点评结果中涉及你自己的信息。",
+          systemContent:
+            "你是一个美食点评助手。你善于对美食进行点评，你应该在点评结果中涉及你自己的信息。",
           conversationTimes: 1,
           templateList: [
             "餐厅名是",
@@ -90,6 +91,16 @@ const routes = [
             name: type,
           } = router;
           return { title, type, api };
+        },
+      },
+      {
+        path: "contactUs",
+        name: "contactUs",
+        component: () => import("@/view/ContactUs.vue"),
+        meta: { title: "加群交流", tagText: "热" },
+        props: (router) => {
+          let { meta, name: type } = router;
+          return { type, ...meta };
         },
       },
       {

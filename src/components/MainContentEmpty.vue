@@ -34,7 +34,6 @@
         <van-button
           @click="commit(item)"
           @touchstart="commit(item)"
-          color="rgb(247, 247, 248)"
           block
           style="color: black"
           >"{{ item }}" →</van-button
@@ -63,17 +62,17 @@
         能力
       </h2>
       <div class="demo-button">
-        <van-button color="rgb(247, 247, 248)" block style="color: black"
+        <van-button block style="color: black"
           >记得用户之前在最近的对话中说过什么
         </van-button>
       </div>
       <div class="demo-button">
-        <van-button color="rgb(247, 247, 248)" block style="color: black">
+        <van-button block style="color: black">
           允许用户提供后续更正
         </van-button>
       </div>
       <div class="demo-button">
-        <van-button color="rgb(247, 247, 248)" block style="color: black">
+        <van-button block style="color: black">
           接受过拒绝不适当请求的训练
         </van-button>
       </div>
@@ -101,17 +100,17 @@
         限制
       </h2>
       <div class="demo-button">
-        <van-button color="rgb(247, 247, 248)" block style="color: black">
+        <van-button block style="color: black">
           可能偶尔产生不正确的信息
         </van-button>
       </div>
       <div class="demo-button">
-        <van-button color="rgb(247, 247, 248)" block style="color: black">
+        <van-button block style="color: black">
           可能偶尔会产生有害的指示或偏见内容
         </van-button>
       </div>
       <div class="demo-button">
-        <van-button color="rgb(247, 247, 248)" block style="color: black">
+        <van-button block style="color: black">
           对2021年后的世界和事件了解有限
         </van-button>
       </div>
