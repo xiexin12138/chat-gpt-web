@@ -10,6 +10,7 @@
         <van-cell size="large">
           <van-field
             v-model.trim="prompt"
+            style="height: 120px"
             type="textarea"
             maxlength="400"
             placeholder="(请勿输入敏感或涉密信息进行测试)一幅印象派油画，画的是紫色花瓶里的向日葵……"
@@ -260,8 +261,5 @@ export default {
   font-weight: 800;
   color: #666;
   font-size: 16px;
-}
-.van-field__control {
-  height: 120px;
 }
 </style>
