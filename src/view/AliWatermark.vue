@@ -34,7 +34,7 @@
               :before-read="beforeRead"
               :after-read="(v) => afterRead(v, 'sourceImg')"
               v-model="sourceImg"
-              :before-delete="(v) => beforeDelete(v, 'afterWatermarkImg')"
+              :before-delete="() => beforeDelete('afterWatermarkImg')"
             />
           </div>
 
@@ -71,9 +71,9 @@
           <div class="uploader-wrap">
             <h3 style="font-size: 14px">
               输入文本
-              <span style="color: #ee0a24; font-size: 12; font-weight: normal"
+              <!-- <span style="color: #ee0a24; font-size: 12; font-weight: normal"
                 >(支持数字及英文大小写)</span
-              >
+              > -->
             </h3>
             <div class="water-text-temp-wrap">
               <van-field v-model="watermarkText" @input="textInput" />
@@ -88,7 +88,7 @@
               :before-read="beforeRead"
               :after-read="(v) => afterRead(v, 'watermarkTextSourceImg')"
               v-model="watermarkTextSourceImg"
-              :before-delete="(v) => beforeDelete(v, 'afterWatermarkText')"
+              :before-delete="() => beforeDelete('afterWatermarkText')"
             />
           </div>
 
@@ -128,6 +128,7 @@
 
 <script>
 import api from "@/api/index";
+import { shrinkImage } from "shrinkpng";
 import {
   Tab,
   Tabs,
@@ -137,11 +138,11 @@ import {
   Image as VantImg,
   Loading,
   Field,
-  // Dialog,
+  Dialog,
 } from "vant";
 
 export default {
-  name: "WaterMark",
+  name: "AliWaterMark",
   components: {
     VanTab: Tab,
     VanTabs: Tabs,
@@ -161,27 +162,26 @@ export default {
       sourceImg: [],
       afterWatermarkImg: "",
       watermarkTemp: [
-        "https://pingantest-1317433877.cos.ap-nanjing.myqcloud.com/preinstallWatermark/watermark-selected-1.png",
-        "https://pingantest-1317433877.cos.ap-nanjing.myqcloud.com/preinstallWatermark/watermark-selected-2.png",
-        "https://pingantest-1317433877.cos.ap-nanjing.myqcloud.com/preinstallWatermark/watermark-selected-3.png",
+        "https://pingantest002.oss-cn-shanghai.aliyuncs.com/watermark/watermark-selected-1.png",
+        "https://pingantest002.oss-cn-shanghai.aliyuncs.com/watermark/watermark-selected-2.png",
+        "https://pingantest002.oss-cn-shanghai.aliyuncs.com/watermark/watermark-selected-3.png",
       ],
     };
   },
   mounted() {},
   methods: {
-    beforeDelete(v, type) {
-      console.log(v);
+    beforeDelete(type) {
       this[type] = "";
       return true;
     },
-    textInput(v) {
-      let s = "";
-      for (let i = 0; i < v.length; i++) {
-        let vi = v[i];
-        vi = vi.replace(/^[\u4e00-\u9fa5]/g, "");
-        s += vi;
-      }
-      this.watermarkText = s;
+    textInput() {
+      // let s = "";
+      // for (let i = 0; i < v.length; i++) {
+      //   let vi = v[i];
+      //   vi = vi.replace(/^[\u4e00-\u9fa5]/g, "");
+      //   s += vi;
+      // }
+      // this.watermarkText = s;
     },
     imgPreview(img) {
       if (!img) return;
@@ -218,7 +218,7 @@ export default {
               : this.afterWatermarkText,
         })
       );
-      this.$router.push("/extractWaterMark");
+      this.$router.push("/aliextractWaterMark");
     },
     generateMarkImg(type) {
       const validateMap = {
@@ -248,7 +248,6 @@ export default {
         },
       };
       const pass = validateMap[type]();
-      console.log(pass);
       if (!pass) return;
       this.addWatermark(type);
     },
@@ -270,7 +269,7 @@ export default {
           formData.append("originPicFile", this.watermarkTextSourceImg[0].file);
         }
 
-        const res = await api.addWatermark(formData);
+        const res = await api.aliAddWatermark(formData);
         t.clear();
         if (res.data.rspCode === "000000") {
           if (type === "pic") {
@@ -279,7 +278,10 @@ export default {
             this.afterWatermarkText = res.data.data;
           }
         } else {
-          this.$toast(res.data.rspMsg);
+          this.$toast({
+            message: res.data.rspMsg,
+            duration: 5000,
+          });
         }
       } catch (err) {
         t.clear();
@@ -305,6 +307,50 @@ export default {
     },
     afterRead(file, type) {
       console.log(file, type, this.sourceImg);
+      if (file.file.size >= 3 * 1024 * 1000) {
+        this[type] = [];
+        Dialog.confirm({
+          title: "温馨提示",
+          message: '您选择的图片大于3M， 选择"确认压缩" 系统将自动压缩图片',
+          confirmButtonText: "确认压缩",
+          cancelButtonText: "重选图片",
+        })
+          .then(async () => {
+            // on confirm
+            const compressLoading = this.$toast.loading({
+              message: "图片压缩中...",
+              forbidClick: true,
+              duration: 0,
+            });
+            const quality = 95;
+            let _file = {};
+            for (let i = quality; i > 0; i -= 10) {
+              if (_file.size && _file.size / 1024 < 3 * 1024) {
+                console.log(i);
+                break;
+              }
+              _file = await shrinkImage(file.file, {
+                quality: i,
+              });
+            }
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(_file);
+            fileReader.onload = (e) => {
+              compressLoading.clear();
+              this[type] = [
+                {
+                  file: _file,
+                  content: e.target.result,
+                },
+              ];
+            };
+            console.log(_file);
+          })
+          .catch(() => {
+            // on cancel
+            this[type] = [];
+          });
+      }
     },
   },
   computed: {},

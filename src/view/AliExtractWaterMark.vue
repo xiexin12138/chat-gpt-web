@@ -9,7 +9,7 @@
           v-model="watermarkImgSource"
           :max-size="1000 * 1024 * 10"
           :after-read="watermarkImgSourceAfterRead"
-          :before-delete="beforeDelete"
+          :before-delete="() => beforeDelete()"
         />
       </div>
       <div class="uploader-wrap">
@@ -27,24 +27,15 @@
           style="border: 1px solid #ebedf0"
         >
           <div class="water-text-temp-wrap" style="border: none">
-            <van-field
-              v-model="watermarkText"
-              @input="textInput"
-              readonly
-              style="padding: 0"
-            />
+            <van-field v-model="watermarkText" readonly style="padding: 0" />
           </div>
         </div>
         <div class="water-img-temp-wrap" v-else>
           <van-image
-            @click="selectedImg(item, 'isActiveImg2')"
             :class="{
-              'active-img': isActiveImg2 === item,
               'default-img': 1,
             }"
-            v-for="item in watermarkTemp"
-            :src="item"
-            :key="item"
+            :src="isActiveImg2"
             width="100"
             height="100"
             fit="contain"
@@ -57,29 +48,11 @@
       </div>
       <div class="uploader-wrap">
         <h3 style="font-size: 14px">
-          提取的水印图
-          <p
+          提取的水印图<span
             v-show="isText"
-            style="
-              color: #ee0a24;
-              font-size: 12;
-              font-weight: normal;
-              margin: 0;
-            "
+            style="color: #ee0a24; font-size: 12; font-weight: normal"
+            >(轻触图片放大查看；长按图片可保存)</span
           >
-            (提取的文字较小，轻触图片放大查看；长按图片可保存)
-          </p>
-          <span
-            v-show="!isText"
-            style="
-              color: #ee0a24;
-              font-size: 12;
-              font-weight: normal;
-              margin: 0;
-            "
-          >
-            (长按图片可保存)
-          </span>
         </h3>
         <van-image
           :src="watermarkImgTarget"
@@ -107,7 +80,7 @@ import api from "@/api/index";
 import { Uploader, Button, ImagePreview, Image, Loading, Field } from "vant";
 
 export default {
-  name: "ExtractWaterMark",
+  name: "AliExtractWaterMark",
   components: {
     VanUploader: Uploader,
     VanButton: Button,
@@ -230,10 +203,10 @@ export default {
           formData.append("watermarkText", this.watermarkText);
         } else {
           formData.append("bwmType", "pic");
-          formData.append("watermarkPicUrl", this.isActiveImg2);
+          // formData.append("watermarkPicUrl", this.isActiveImg2);
         }
 
-        const res = await api.extractWatermark(formData);
+        const res = await api.aliExtractWatermark(formData);
         t.clear();
         if (res.data.rspCode === "000000") {
           this.watermarkImgTarget = res.data.data;
@@ -258,9 +231,9 @@ export default {
       try {
         const formData = new FormData();
         formData.append("bwmType", "pic");
-        formData.append("watermarkPicUrl", this.isActiveImg);
+        // formData.append("watermarkPicUrl", this.isActiveImg);
         formData.append("originPicFile", this.sourceImg[0].file);
-        const res = await api.addWatermark(formData);
+        const res = await api.aliExtractWatermark(formData);
         t.clear();
         if (res.data.rspCode === "000000") {
           this.afterWatermarkImg = res.data.data;
