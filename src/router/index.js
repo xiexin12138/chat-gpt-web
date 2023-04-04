@@ -170,7 +170,7 @@ const routes = [
         path: "extractWaterMark",
         name: "ExtractWaterMark",
         component: () => import("@/view/ExtractWaterMark.vue"),
-        meta: { title: "提取水印" },
+        meta: { title: "提取水印", hideMenu: true },
         props: (router) => {
           let {
             meta: { title },
