@@ -34,11 +34,17 @@
               :before-read="beforeRead"
               :after-read="(v) => afterRead(v, 'sourceImg')"
               v-model="sourceImg"
+              :before-delete="(v) => beforeDelete(v, 'afterWatermarkImg')"
             />
           </div>
 
           <div class="uploader-wrap">
-            <h3 style="font-size: 14px">盲水印图</h3>
+            <h3 style="font-size: 14px">
+              盲水印图<span
+                style="color: #ee0a24; font-size: 12; font-weight: normal"
+                >(长按图片可保存)</span
+              >
+            </h3>
             <van-image
               :src="afterWatermarkImg"
               width="100%"
@@ -53,10 +59,10 @@
             </van-image>
           </div>
           <div class="watermark-footer-button-wrap">
-            <van-button type="default" @click="generateMarkImg('pic')">
+            <van-button type="info" @click="generateMarkImg('pic')">
               生成盲水印图
             </van-button>
-            <van-button type="info" @click="getWatermarkImg('pic')">
+            <van-button type="default" @click="getWatermarkImg('pic')">
               提取图片水印
             </van-button>
           </div>
@@ -65,12 +71,12 @@
           <div class="uploader-wrap">
             <h3 style="font-size: 14px">
               输入文本
-              <span style="color: #ccc; font-size: 12; font-weight: normal"
+              <span style="color: #ee0a24; font-size: 12; font-weight: normal"
                 >(支持数字及英文大小写)</span
               >
             </h3>
             <div class="water-text-temp-wrap">
-              <van-field v-model="watermarkText" />
+              <van-field v-model="watermarkText" @input="textInput" />
             </div>
           </div>
 
@@ -82,11 +88,17 @@
               :before-read="beforeRead"
               :after-read="(v) => afterRead(v, 'watermarkTextSourceImg')"
               v-model="watermarkTextSourceImg"
+              :before-delete="(v) => beforeDelete(v, 'afterWatermarkText')"
             />
           </div>
 
           <div class="uploader-wrap">
-            <h3 style="font-size: 14px">盲水印图</h3>
+            <h3 style="font-size: 14px">
+              盲水印图<span
+                style="color: #ee0a24; font-size: 12; font-weight: normal"
+                >(长按图片可保存)</span
+              >
+            </h3>
             <van-image
               :src="afterWatermarkText"
               width="100%"
@@ -101,10 +113,10 @@
             </van-image>
           </div>
           <div class="watermark-footer-button-wrap">
-            <van-button type="default" @click="generateMarkImg('text')">
+            <van-button type="info" @click="generateMarkImg('text')">
               生成盲水印图
             </van-button>
-            <van-button type="info" @click="getWatermarkImg('text')">
+            <van-button type="default" @click="getWatermarkImg('text')">
               提取文本水印
             </van-button>
           </div>
@@ -119,14 +131,13 @@ import api from "@/api/index";
 import {
   Tab,
   Tabs,
-  // Field,
   Uploader,
   Button,
   ImagePreview,
-  // Dialog,
-  Image,
+  Image as VantImg,
   Loading,
   Field,
+  // Dialog,
 } from "vant";
 
 export default {
@@ -136,7 +147,7 @@ export default {
     VanTabs: Tabs,
     VanUploader: Uploader,
     VanButton: Button,
-    vanImage: Image,
+    vanImage: VantImg,
     VanLoading: Loading,
     VanField: Field,
   },
@@ -153,12 +164,25 @@ export default {
         "https://pingantest-1317433877.cos.ap-nanjing.myqcloud.com/preinstallWatermark/watermark-selected-1.png",
         "https://pingantest-1317433877.cos.ap-nanjing.myqcloud.com/preinstallWatermark/watermark-selected-2.png",
         "https://pingantest-1317433877.cos.ap-nanjing.myqcloud.com/preinstallWatermark/watermark-selected-3.png",
-        // "https://pingantest-1317433877.cos.ap-nanjing.myqcloud.com/preinstallWatermark/watermark-selected-4.png",
       ],
     };
   },
   mounted() {},
   methods: {
+    beforeDelete(v, type) {
+      console.log(v);
+      this[type] = "";
+      return true;
+    },
+    textInput(v) {
+      let s = "";
+      for (let i = 0; i < v.length; i++) {
+        let vi = v[i];
+        vi = vi.replace(/^[\u4e00-\u9fa5]/g, "");
+        s += vi;
+      }
+      this.watermarkText = s;
+    },
     imgPreview(img) {
       if (!img) return;
       ImagePreview([img]);

@@ -192,7 +192,7 @@ function translate(content) {
 
 async function addWatermark(data) {
   return axios({
-    url: `${env.BASE_URL}/watermark/addWatermark`,
+    url: `${env.WATER_MARK_BASE_URL}/watermark/addWatermark`,
     method: "post",
     data,
     headers: {
@@ -202,7 +202,7 @@ async function addWatermark(data) {
 }
 async function extractWatermark(data) {
   return axios({
-    url: `${env.BASE_URL}/watermark/extractWatermark`,
+    url: `${env.WATER_MARK_BASE_URL}/watermark/extractWatermark`,
     method: "post",
     data,
     headers: {

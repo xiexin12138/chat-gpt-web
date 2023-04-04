@@ -9,20 +9,26 @@
           v-model="watermarkImgSource"
           :max-size="1000 * 1024 * 10"
           :after-read="watermarkImgSourceAfterRead"
+          :before-delete="beforeDelete"
         />
       </div>
       <div class="uploader-wrap">
         <h3 style="font-size: 14px">
-          {{ isText ? "输入文本" : "水印图" }}
-          <span
-            style="color: #ccc; font-size: 12; font-weight: normal"
+          {{ isText ? "文本水印" : "水印图" }}
+          <!-- <span
+            style="color: #ee0a24; font-size: 12; font-weight: normal"
             v-show="isText"
             >(支持数字及英文大小写)</span
-          >
+          > -->
         </h3>
         <div class="uploader-wrap" v-if="isText">
           <div class="water-text-temp-wrap">
-            <van-field v-model="watermarkText" />
+            <van-field
+              v-model="watermarkText"
+              @input="textInput"
+              readonly
+              disabled
+            />
           </div>
         </div>
         <div class="water-img-temp-wrap" v-else>
@@ -47,11 +53,29 @@
       </div>
       <div class="uploader-wrap">
         <h3 style="font-size: 14px">
-          提取的水印图<span
+          提取的水印图
+          <p
             v-show="isText"
-            style="color: #ccc; font-size: 12; font-weight: normal"
-            >(提取的文字较小，轻触图片放大查看)</span
+            style="
+              color: #ee0a24;
+              font-size: 12;
+              font-weight: normal;
+              margin: 0;
+            "
           >
+            (提取的文字较小，轻触图片放大查看；长按图片可保存)
+          </p>
+          <span
+            v-show="!isText"
+            style="
+              color: #ee0a24;
+              font-size: 12;
+              font-weight: normal;
+              margin: 0;
+            "
+          >
+            (长按图片可保存)
+          </span>
         </h3>
         <van-image
           :src="watermarkImgTarget"
@@ -108,19 +132,28 @@ export default {
     window.sessionStorage.removeItem("watermarkOptions");
   },
   mounted() {
-    const options = JSON.parse(
-      window.sessionStorage.getItem("watermarkOptions")
-    );
-    this.watermarkImgSource = [{ url: options.afterWatermarkImg }];
-    if (options.isText === 0) {
-      this.isText = 0;
-      this.isActiveImg2 = options.watermark;
-    } else {
-      this.isText = 1;
-      this.watermarkText = options.watermark;
+    let options = window.sessionStorage.getItem("watermarkOptions");
+    if (options) {
+      options = JSON.parse(window.sessionStorage.getItem("watermarkOptions"));
+      this.watermarkImgSource = [{ url: options.afterWatermarkImg }];
+      if (options.isText === 0) {
+        this.isText = 0;
+        this.isActiveImg2 = options.watermark;
+      } else {
+        this.isText = 1;
+        this.watermarkText = options.watermark;
+      }
     }
   },
   methods: {
+    beforeDelete() {
+      this.watermarkImgTarget = "";
+      return true;
+    },
+    textInput(v) {
+      console.log(v);
+      this.watermarkText = v.replace(/[\u4e00-\u9fa5]/, "");
+    },
     goback() {
       this.$router.go(-1);
     },
@@ -152,17 +185,19 @@ export default {
       this.addWatermark();
     },
     extract() {
-      if (this.isText) {
-        if (this.watermarkText.length <= 0) {
-          this.$toast("请输入文本");
-          return;
-        }
-      } else {
+      if (!this.isText) {
         if (!this.isActiveImg2) {
           this.$toast("请选择水印图");
           return;
         }
+        // if (this.watermarkText.length <= 0) {
+        //   this.$toast("请输入文本");
+        //   return;
+        // }
       }
+      // else {
+
+      // }
       if (this.watermarkImgSource.length <= 0) {
         this.$toast("请上传盲水印图");
         return;
