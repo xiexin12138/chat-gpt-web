@@ -43,7 +43,7 @@ const routes = [
         path: "watermark",
         name: "watermark",
         component: () => import("@/view/Watermark.vue"),
-        meta: { title: "盲水印" },
+        meta: { title: "腾讯盲水印" },
         props: (router) => {
           let {
             meta: { title },
@@ -56,6 +56,32 @@ const routes = [
         path: "extractWaterMark",
         name: "ExtractWaterMark",
         component: () => import("@/view/ExtractWaterMark.vue"),
+        meta: { title: "提取水印", hideMenu: true },
+        props: (router) => {
+          let {
+            meta: { title },
+            name: type,
+          } = router;
+          return { title, type };
+        },
+      },
+      {
+        path: "aliwatermark",
+        name: "AliWatermark",
+        component: () => import("@/view/AliWatermark.vue"),
+        meta: { title: "阿里盲水印" },
+        props: (router) => {
+          let {
+            meta: { title },
+            name: type,
+          } = router;
+          return { title, type };
+        },
+      },
+      {
+        path: "aliextractWaterMark",
+        name: "AliExtractWaterMark",
+        component: () => import("@/view/AliExtractWaterMark.vue"),
         meta: { title: "提取水印", hideMenu: true },
         props: (router) => {
           let {

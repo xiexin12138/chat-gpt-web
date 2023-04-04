@@ -40,7 +40,7 @@ export default {
     initMenu() {
       let children = this.$router.options.routes?.[1]?.children || [];
       children.forEach((child) => {
-        if (child.meta && !child.meta.hedeMenu) {
+        if (child.meta && !child.meta.hideMenu) {
           this.menuList.push({
             title: child.meta.title,
             name: child.name,

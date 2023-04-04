@@ -211,6 +211,27 @@ async function extractWatermark(data) {
   });
 }
 
+async function aliAddWatermark(data) {
+  return axios({
+    url: `${env.WATER_MARK_BASE_URL}/aliwatermark/addWatermark`,
+    method: "post",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+async function aliExtractWatermark(data) {
+  return axios({
+    url: `${env.WATER_MARK_BASE_URL}/aliwatermark/extractWatermark`,
+    method: "post",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
 function parse(str) {
   try {
     return JSON.parse(str);
@@ -227,4 +248,6 @@ export default {
   translate,
   addWatermark,
   extractWatermark,
+  aliAddWatermark,
+  aliExtractWatermark,
 };
