@@ -15,7 +15,10 @@ let config = defineConfig({
   },
   devServer: {
     proxy: {
-      [`^${env.RANDOM_CODE}/v1`]: {
+      [`^/v1`]: {
+        target: env.BASE_URL,
+      },
+      [`/v2`]: {
         target: env.BASE_URL,
       },
     },

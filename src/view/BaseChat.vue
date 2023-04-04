@@ -1,6 +1,6 @@
 <template>
   <div ref="wrap" style="height: calc(100vh - 200px); overflow: scroll">
-    <div style="padding-bottom: 150px;overflow: scroll">
+    <div style="padding-bottom: 150px; overflow: scroll">
       <MainContent
         :loading="isLoading"
         :conversationList="conversationList"
@@ -27,6 +27,12 @@
           row="3"
           border
         >
+          <template #label>
+            <div class="field-label-text">开启<br />连续对话</div>
+            <div style="width: 100%; text-align: center; margin-top: 10px">
+              <van-switch v-model="checked" size="24px" />
+            </div>
+          </template>
           <template #button>
             <van-button
               @click="commit(promptValue)"
@@ -45,7 +51,7 @@
 
 <script>
 import api from "@/api/index";
-import { Field, Button } from "vant";
+import { Field, Button, Switch } from "vant";
 import MainContentEmpty from "@/components/MainContentEmpty.vue";
 import MainContent from "@/components/MainContent.vue";
 
@@ -57,6 +63,7 @@ export default {
     MainContent,
     VanButton: Button,
     MainContentEmpty,
+    VanSwitch: Switch,
   },
   props: {
     title: {
@@ -99,6 +106,7 @@ export default {
       haveSideBar: false,
       isLoading: false,
       showNav: false,
+      checked: false, // 是否开启多轮对话
       conversationList: [],
       testMsg: "",
       code: ``,
@@ -155,7 +163,8 @@ export default {
         });
         let answer = this.conversationList[this.conversationList.length - 1];
         let messages = [];
-        let list = this.conversationList.slice(-(2 * this.conversationTimes)); // 获取最后5次对话
+        let times = this.checked ? this.conversationTimes : 1;
+        let list = this.conversationList.slice(-(2 * times)); // 获取最后5次对话
         list.forEach((conversation) => {
           if (conversation.type === "question") {
             messages.push({
@@ -245,6 +254,14 @@ export default {
   text-align: center;
   padding: 0.5rem 0.75rem 0.75rem 0.75rem;
 }
+.field-label-text {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  white-space: pre-wrap;
+  text-align: center;
+}
+
 .left-label {
   margin: 0;
   width: 75px;
