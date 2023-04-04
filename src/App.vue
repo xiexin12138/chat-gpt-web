@@ -53,7 +53,7 @@ export default {
       showNav: false,
       showNew: false,
       showNoticeBar: false,
-      currentCode: "000",
+      currentCode: "001",
     };
   },
   mounted() {
