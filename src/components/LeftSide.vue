@@ -2,7 +2,7 @@
   <div>
     <div class="nav-title">
       <van-icon name="apps-o" />
-      功能导航
+      菜单
     </div>
     <van-divider />
     <van-list>

@@ -3,6 +3,9 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
+let today = new Date();
+let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
+
 const routes = [
   {
     path: "/",
@@ -14,7 +17,7 @@ const routes = [
         name: "chat",
         component: () => import("@/view/BaseChat.vue"),
         meta: {
-          title: "文本生成工具",
+          title: "聊天助手",
           api: "getTurboStream",
           placeholder: "请输入问题",
           demoBtnList: [
@@ -22,6 +25,12 @@ const routes = [
             "给一个10岁的孩子过生日有什么创意吗?",
             "如何在JavaScript中进行HTTP请求?",
           ],
+          conversationTimes: 2,
+          systemContent: `你叫Moss，你善于聊天，你无所不知。，你知识库的截止日期是${yesterday.getFullYear()}年${
+            yesterday.getMonth() + 1
+          }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
+            today.getMonth() + 1
+          }月${today.getDate()}日`,
         },
         props: (router) => {
           let { meta, name: type } = router;
@@ -84,13 +93,10 @@ const routes = [
         path: "image",
         name: "image",
         component: () => import("@/view/ImageGeneration.vue"),
-        meta: { title: "图像生成工具", api: "generateImage" },
+        meta: { title: "图像生成工具", api: "generateImage", freeTimes: 5 },
         props: (router) => {
-          let {
-            meta: { title, api },
-            name: type,
-          } = router;
-          return { title, type, api };
+          let { meta, name: type } = router;
+          return { type, ...meta };
         },
       },
       {

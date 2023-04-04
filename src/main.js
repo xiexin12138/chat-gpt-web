@@ -9,7 +9,6 @@ Vue.prototype.$global = global;
 
 Vue.use(Lazyload);
 Vue.use(Icon);
-// Vue.use(Toast);
 Vue.prototype.$toast = Toast;
 
 Vue.config.productionTip = false;

@@ -1,7 +1,11 @@
 <template>
   <div ref="wrap" class="wrap">
     <template v-if="!isLoading">
-      <div class="title-description">用一段详细的描述来画画</div>
+      <div class="title-description">
+        -
+        用一段详细的描述来画画，生成后<strong>记得保存好图片</strong>，我们未做任何储存<br />
+        - 因为费用问题，还可以体验 <strong>{{ currentTime }}</strong> 次
+      </div>
       <!-- 编辑细节的描述 -->
       <van-cell-group
         inset
@@ -119,6 +123,12 @@ export default {
     VanDialog: Dialog.Component,
     VanLoading: Loading,
   },
+  props: {
+    freeTimes: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       prompt: "",
@@ -129,6 +139,8 @@ export default {
       isLoading: false,
       canGenerate: true,
       percentage: 0,
+      currentTime: 0,
+      validateCode: "aouwiqruageiw7q239",
     };
   },
   mounted() {
@@ -143,8 +155,17 @@ export default {
         url: context(key),
       });
     });
+    this.initTimes();
   },
   methods: {
+    initTimes() {
+      let limitTime = localStorage.getItem("Limit_Times");
+      if (!limitTime) {
+        localStorage.setItem("Limit_Times", this.freeTimes);
+      } else {
+        this.currentTime = Number.parseInt(limitTime);
+      }
+    },
     copyUrl(url) {
       util.copy(url);
       this.$toast("已复制图片链接");
@@ -156,6 +177,9 @@ export default {
     async generation() {
       if (!this.prompt) {
         return this.$toast("写点什么吧");
+      }
+      if (!this.haveTimesToGenerate) {
+        return this.$toast("噢，次数用完了");
       }
       this.isLoading = true;
       this.canGenerate = false;
@@ -185,6 +209,10 @@ export default {
             if (!isDone) {
               this.percentage = 100;
               isDone = true;
+              if (this.$route.query.validateCode !== this.validateCode) {
+                this.currentTime--;
+              }
+              localStorage.setItem("Limit_Times", this.currentTime);
               setTimeout(() => {
                 this.isLoading = false;
                 this.imageList = result?.data?.data || [];
@@ -235,6 +263,15 @@ export default {
   filters: {
     toText(list) {
       return `- ${list.join("\n- ")}`;
+    },
+  },
+  computed: {
+    haveTimesToGenerate() {
+      if (this.$route.query.validateCode === this.validateCode) {
+        return true;
+      } else {
+        return this.currentTime > 0;
+      }
     },
   },
 };
