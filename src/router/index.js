@@ -103,7 +103,7 @@ const routes = [
         path: "contactUs",
         name: "contactUs",
         component: () => import("@/view/ContactUs.vue"),
-        meta: { title: "加群交流", tagText: "热" },
+        meta: { title: "加群交流 (Contact Us)", tagText: "热" },
         props: (router) => {
           let { meta, name: type } = router;
           return { type, ...meta };

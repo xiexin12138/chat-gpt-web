@@ -17,7 +17,7 @@
       background="#ecf9ff"
       mode="closeable"
       scrollable
-      text="网站使用个人经费，请合理使用，切勿滥用; 为防止被蔷导致失联，请点击加群防丢"
+      text="网站使用个人经费，请合理使用，切勿滥用; 如果你对 AIGC 感兴趣，欢迎加群讨论～"
       @click="goToJoinGroup"
       @close="closeNoticeBart"
     />
