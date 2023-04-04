@@ -20,6 +20,7 @@ specifiers:
   path: 0.12.7
   postcss: 8.0.0
   postcss-pxtorem: 6.0.0
+  shrinkpng: 1.2.0-beta.1
   vant: 2.12.54
   vue: 2.6.14
   vue-router: '3'
@@ -38,6 +39,7 @@ dependencies:
   path: registry.npmmirror.com/path/0.12.7
   postcss: registry.npmmirror.com/postcss/8.0.0
   postcss-pxtorem: registry.npmmirror.com/postcss-pxtorem/6.0.0_postcss@8.0.0
+  shrinkpng: registry.npmmirror.com/shrinkpng/1.2.0-beta.1
   vant: registry.npmmirror.com/vant/2.12.54_vue@2.6.14
   vue: registry.npmmirror.com/vue/2.6.14
   vue-router: registry.npmmirror.com/vue-router/3.6.5
@@ -1528,6 +1530,16 @@ packages:
     name: '@babel/regjsgen'
     version: 0.8.0
     dev: true
+
+  registry.npmmirror.com/@babel/runtime-corejs3/7.21.0:
+    resolution: {integrity: sha512-TDD4UJzos3JJtM+tHX+w2Uc+KWj7GV+VKKFdMVd2Rx8sdA19hcc3P3AHFYd5LVOw+pYuSd5lICC3gm52B6Rwxw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@babel/runtime-corejs3/-/runtime-corejs3-7.21.0.tgz}
+    name: '@babel/runtime-corejs3'
+    version: 7.21.0
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      core-js-pure: registry.npmmirror.com/core-js-pure/3.30.0
+      regenerator-runtime: registry.npmmirror.com/regenerator-runtime/0.13.11
+    dev: false
 
   registry.npmmirror.com/@babel/runtime/7.21.0:
     resolution: {integrity: sha512-xwII0//EObnq89Ji5AKYQaRYiW/nZ3llSv29d49IuxPhKbtJoLP+9QUUZ4nVragQVtaVGeZrpB+ZtG/Pdy/POw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@babel/runtime/-/runtime-7.21.0.tgz}
@@ -4555,6 +4567,13 @@ packages:
     dependencies:
       browserslist: registry.npmmirror.com/browserslist/4.21.5
     dev: true
+
+  registry.npmmirror.com/core-js-pure/3.30.0:
+    resolution: {integrity: sha512-+2KbMFGeBU0ln/csoPqTe0i/yfHbrd2EUhNMObsGtXMKS/RTtlkYyi+/3twLcevbgNR0yM/r0Psa3TEoQRpFMQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/core-js-pure/-/core-js-pure-3.30.0.tgz}
+    name: core-js-pure
+    version: 3.30.0
+    requiresBuild: true
+    dev: false
 
   registry.npmmirror.com/core-js/3.8.3:
     resolution: {integrity: sha512-KPYXeVZYemC2TkNEkX/01I+7yd+nX3KddKwZ1Ww7SKWdI2wQprSgLmrTddT8nw92AjEklTsPBoSdQBhbI1bQ6Q==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/core-js/-/core-js-3.8.3.tgz}
@@ -8570,6 +8589,12 @@ packages:
     version: 1.0.11
     dev: false
 
+  registry.npmmirror.com/pako/2.1.0:
+    resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/pako/-/pako-2.1.0.tgz}
+    name: pako
+    version: 2.1.0
+    dev: false
+
   registry.npmmirror.com/parallel-transform/1.2.0:
     resolution: {integrity: sha512-P2vSmIu38uIlvdcU7fDkyrxj33gTUy/ABO5ZUbGowxNCopBq/OoD42bP4UmMrJoPyk4Uqf0mu3mtWBhHCZD8yg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/parallel-transform/-/parallel-transform-1.2.0.tgz}
     name: parallel-transform
@@ -10163,6 +10188,16 @@ packages:
     version: 1.8.0
     dev: true
 
+  registry.npmmirror.com/shrinkpng/1.2.0-beta.1:
+    resolution: {integrity: sha512-14B3Na+thQHyXkz1cMXKcMQ/mYBCJFWck1Z5z3NzmQqF5x712vuM9WWt2g/2V6/+ZYUA40FQLyNl6Q9TcffdEw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/shrinkpng/-/shrinkpng-1.2.0-beta.1.tgz}
+    name: shrinkpng
+    version: 1.2.0-beta.1
+    dependencies:
+      '@babel/runtime-corejs3': registry.npmmirror.com/@babel/runtime-corejs3/7.21.0
+      pako: registry.npmmirror.com/pako/2.1.0
+      uzip: registry.npmmirror.com/uzip/0.20201231.0
+    dev: false
+
   registry.npmmirror.com/side-channel/1.0.4:
     resolution: {integrity: sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/side-channel/-/side-channel-1.0.4.tgz}
     name: side-channel
@@ -11229,6 +11264,12 @@ packages:
     version: 8.3.2
     hasBin: true
     dev: true
+
+  registry.npmmirror.com/uzip/0.20201231.0:
+    resolution: {integrity: sha512-OZeJfZP+R0z9D6TmBgLq2LHzSSptGMGDGigGiEe0pr8UBe/7fdflgHlHBNDASTXB5jnFuxHpNaJywSg8YFeGng==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/uzip/-/uzip-0.20201231.0.tgz}
+    name: uzip
+    version: 0.20201231.0
+    dev: false
 
   registry.npmmirror.com/v8-compile-cache/2.3.0:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/v8-compile-cache/-/v8-compile-cache-2.3.0.tgz}
