@@ -38,13 +38,15 @@ export default {
   },
   methods: {
     initMenu() {
-      let children = this.$router.options.routes?.[1]?.children || []   ;
+      let children = this.$router.options.routes?.[1]?.children || [];
       children.forEach((child) => {
-        this.menuList.push({
-          title: child.meta.title,
-          name: child.name,
-          api: child.meta.api,
-        });
+        if (child.meta && !child.meta.hedeMenu) {
+          this.menuList.push({
+            title: child.meta.title,
+            name: child.name,
+            api: child.meta.api,
+          });
+        }
       });
     },
     go(obj) {
