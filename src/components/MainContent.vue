@@ -5,9 +5,7 @@
         <div>
           <div style="display: flex; gap: 1rem">
             <div
-              v-show="item.type !== 'question'"
               style="
-                background-color: rgb(16, 163, 127);
                 padding: 0.25rem;
                 width: 30px;
                 height: 30px;
@@ -16,8 +14,14 @@
                 position: relative;
                 align-items: center;
               "
+              :style="
+                item.type !== 'question'
+                  ? 'background-color: rgb(16, 163, 127);'
+                  : ''
+              "
             >
               <svg
+                v-show="item.type !== 'question'"
                 width="41"
                 height="41"
                 viewBox="0 0 41 41"

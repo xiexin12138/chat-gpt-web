@@ -118,6 +118,11 @@ export default {
       },
     };
   },
+  created(){
+    let listStr = localStorage.getItem('conversationList') || '[]'
+    this.conversationList  = JSON.parse(listStr)
+
+  },
   mounted() {
     let mode = this.$route.query?.mode;
     if (mode && mode === "full") {
@@ -202,6 +207,9 @@ export default {
                   : content;
                 answer.type = "error";
                 answer.content = result?.message;
+              } else {
+                let list  = this.conversationList.slice(-(2 * 10));
+                localStorage.setItem('conversationList', JSON.stringify(list))
               }
             },
             abort: () => {
