@@ -19,5 +19,4 @@ bin-release/
 node_modules/
 dist/
 .env
-env.js
 src/api/global.cust.js

@@ -1,8 +1,7 @@
 import "whatwg-fetch";
 import axios from "axios";
-import env from "/env.js";
 
-const BASE_URL = process.env.NODE_ENV === "production" ? env.BASE_URL : ""; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
+const BASE_URL = process.env.VUE_APP_BASE_URL; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
 
 /**
  * 请求答案的
@@ -83,7 +82,7 @@ function generateImage({
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: env.KEY ? `Bearer ${env.KEY}` : undefined,
+        // Authorization: env.KEY ? `Bearer ${env.KEY}` : undefined,
         ...headers,
       },
     }
@@ -157,7 +156,7 @@ function completionFromOpenAI({
   fetch(`${BASE_URL}${apiName}`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: env.KEY ? `Bearer ${env.KEY}` : undefined,
+      // Authorization: env.KEY ? `Bearer ${env.KEY}` : undefined,
       ...headers,
     },
     method: "POST",
