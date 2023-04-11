@@ -26,7 +26,7 @@ const routes = [
             "如何在JavaScript中进行HTTP请求?",
           ],
           conversationTimes: 2,
-          systemContent: `你叫Moss，你善于聊天，你无所不知。，你知识库的截止日期是${yesterday.getFullYear()}年${
+          systemContent: `你叫刘百万，你善于聊天，你知识库的截止日期是${yesterday.getFullYear()}年${
             yesterday.getMonth() + 1
           }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
             today.getMonth() + 1
