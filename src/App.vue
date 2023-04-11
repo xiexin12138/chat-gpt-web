@@ -25,7 +25,7 @@
     <van-popup
       v-model="showNav"
       position="left"
-      :style="{ width: '70%', height: '100%' }"
+      :style="{ width: '70%',maxWidth: '400px', height: '100%' }"
     >
       <LeftSide @go="go"></LeftSide>
     </van-popup>
