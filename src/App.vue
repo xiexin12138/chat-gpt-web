@@ -17,7 +17,7 @@
       background="#ecf9ff"
       mode="closeable"
       scrollable
-      text="网站使用个人经费，仅供体验学习，请合理使用，切勿滥用; 如果你对 AIGC 感兴趣，欢迎加群讨论"
+      text="网站使用个人经费，仅供体验学习，请合理使用，切勿滥用; 为防止被墙而导致失联，请点击加群防丢； 本站累计被墙 1 次"
       @click="goToJoinGroup"
       @close="closeNoticeBart"
     />
@@ -53,7 +53,7 @@ export default {
       showNav: false,
       showNew: false,
       showNoticeBar: false,
-      currentCode: "001",
+      currentCode: "002",
     };
   },
   mounted() {

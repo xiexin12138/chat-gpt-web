@@ -24,7 +24,7 @@ import {
   Button as VanButton,
   Divider as VanDivider,
 } from "vant";
-import joinGroup from "@/assets/images/joinGroup-2.jpeg";
+import joinGroup from "@/assets/images/joinGroup-3.jpg";
 
 export default {
   name: "ContactUs",
