@@ -206,6 +206,16 @@ const routes = [
         },
       },
       {
+        path: "knowledgeBase",
+        name: "knowledgeBase",
+        component: () => import("@/view/IframePage.vue"),
+        meta: { title: "智能知识库", url: process.env.VUE_APP_KNOWLEDGE_BASE_URL },
+        props: (router) => {
+          let { meta, name: type } = router;
+          return { type, ...meta };
+        },
+      },
+      {
         path: "updateLog",
         name: "updateLog",
         component: () => import("@/view/UpdateLog.vue"),

@@ -18,6 +18,6 @@ bin-release/
 # information for Eclipse / Flash Builder.
 node_modules/
 dist/
-.env
-env.js
+.env.*
+!.env.template
 src/api/global.cust.js

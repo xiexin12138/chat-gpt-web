@@ -1,8 +1,8 @@
 import "whatwg-fetch";
 import axios from "axios";
-import env from "/env.js";
 
-const BASE_URL = env.BASE_URL; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
+const BASE_URL =
+  process.env.NODE_ENV === "development" ? process.env.VUE_APP_BASE_URL : "";
 
 function getAnswerText({ messages, systemContent }) {
   let signal, controller;
@@ -13,7 +13,7 @@ function getAnswerText({ messages, systemContent }) {
   function innerFetch() {
     let today = new Date();
     let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
-    return fetch(`${env.BASE_URL}/mygpt3/qtext`, {
+    return fetch(`${BASE_URL}/mygpt3/qtext`, {
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
       },
@@ -174,7 +174,7 @@ function completionFromOpenAI({
 
 async function generateImage(prompt) {
   return axios.post(
-    `${env.IMAGE_URL}/user/getChatImage`,
+    `${process.env.VUE_APP_IMAGE_URL}/user/getChatImage`,
     encodeURI(`prompt=${prompt}&n=2&size=512x512&response_format=url`),
     {
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -184,7 +184,7 @@ async function generateImage(prompt) {
 
 function translate(content) {
   return axios.post(
-    `${env.BASE_URL}/mygpt3/qtext`,
+    `${BASE_URL}/mygpt3/qtext`,
     {
       messages: [
         {
@@ -209,7 +209,7 @@ function translate(content) {
 
 async function addWatermark(data) {
   return axios({
-    url: `${env.WATER_MARK_BASE_URL}/watermark/addWatermark`,
+    url: `${process.env.VUE_APP_WATER_MARK_BASE_URL}/watermark/addWatermark`,
     method: "post",
     data,
     headers: {
@@ -219,7 +219,7 @@ async function addWatermark(data) {
 }
 async function extractWatermark(data) {
   return axios({
-    url: `${env.WATER_MARK_BASE_URL}/watermark/extractWatermark`,
+    url: `${process.env.VUE_APP_WATER_MARK_BASE_URL}/watermark/extractWatermark`,
     method: "post",
     data,
     headers: {
@@ -230,7 +230,7 @@ async function extractWatermark(data) {
 
 async function aliAddWatermark(data) {
   return axios({
-    url: `${env.WATER_MARK_BASE_URL}/aliwatermark/addWatermark`,
+    url: `${process.env.VUE_APP_WATER_MARK_BASE_URL}/aliwatermark/addWatermark`,
     method: "post",
     data,
     headers: {
@@ -240,7 +240,7 @@ async function aliAddWatermark(data) {
 }
 async function aliExtractWatermark(data) {
   return axios({
-    url: `${env.WATER_MARK_BASE_URL}/aliwatermark/extractWatermark`,
+    url: `${process.env.VUE_APP_WATER_MARK_BASE_URL}/aliwatermark/extractWatermark`,
     method: "post",
     data,
     headers: {

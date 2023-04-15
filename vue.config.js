@@ -31,9 +31,10 @@ let config = defineConfig({
   },
   devServer: {
     proxy: {
-      "^/v1": {
+      "^/mygpt3": {
         target: env.BASE_URL,
       },
+     
     },
     compress: false, // 如果本地开发想要启用 SSE (Server-Sent Event)，必须设置为false
   },
