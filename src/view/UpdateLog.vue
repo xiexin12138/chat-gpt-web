@@ -41,6 +41,13 @@ export default {
     return {
       updateList: [
         {
+          title: "V 0.0.4",
+          date: "2023-04-15",
+          contentList: [
+            "新增支持智能知识库。",
+          ],
+        },
+        {
           title: "V 0.0.3",
           date: "2023-03-21",
           contentList: [
