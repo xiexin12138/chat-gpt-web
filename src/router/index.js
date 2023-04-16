@@ -1,5 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+// import server from "@/api/server";
+// import config from "@/api/config";
 
 Vue.use(VueRouter);
 
@@ -10,7 +12,7 @@ const routes = [
   {
     path: "/",
     name: "index",
-    component: () => import("@/App.vue"),
+    component: () => import("@/layout/BasePage.vue"),
     children: [
       {
         path: "chat",
@@ -122,6 +124,16 @@ const routes = [
           return { title, type };
         },
       },
+      // {
+      //   path: "login",
+      //   name: "login",
+      //   component: () => import("@/view/LoginAndRegister.vue"),
+      //   meta: { noShowInMenu: true, title: "登录" },
+      //   props: (router) => {
+      //     let { meta, name: type } = router;
+      //     return { type, ...meta };
+      //   },
+      // },
     ],
     redirect: { path: "/chat" },
   },
@@ -131,5 +143,30 @@ const router = new VueRouter({
   mode: "hash",
   routes,
 });
+
+// router.beforeEach(async (to, from, next) => {
+//   let Access_Token = localStorage.getItem(config.AccessTokenName);
+//   if (config.noAccessTokenPageNameList.includes(to.name)) {
+//     next();
+//   } else if (!Access_Token) {
+//     next({ name: "login" });
+//   } else {
+//     let response = await server.findUser({ accessToken: Access_Token });
+//     if (response?.data?.code === 200) {
+//       localStorage.setItem(
+//         config.UserInfoName,
+//         JSON.stringify(response.data.data)
+//       );
+//       next();
+//     } else {
+//       next({
+//         name: "login",
+//         params: {
+//           message: "登录已失效，请重新登录",
+//         },
+//       });
+//     }
+//   }
+// });
 
 export default router;

@@ -10,6 +10,7 @@
         v-for="(item, index) in menuList"
         :key="index"
         @click="go(item)"
+        style="cursor: pointer"
       >
         <van-icon name="arrow" />
         {{ item.title }}
@@ -44,16 +45,14 @@ export default {
     initMenu() {
       let children = this.$router.options.routes?.[0].children;
       children.forEach((child) => {
-        console.log(
-          "🚀 ~ file: LeftSide.vue:53 ~ children.forEach ~ child:",
-          child
-        );
-        this.menuList.push({
-          title: child.meta.title,
-          name: child.name,
-          api: child.meta.api,
-          tagText: child.meta.tagText,
-        });
+        if (!child.meta.noShowInMenu) {
+          this.menuList.push({
+            title: child.meta.title,
+            name: child.name,
+            api: child.meta.api,
+            tagText: child.meta.tagText,
+          });
+        }
       });
     },
     go(obj) {

@@ -12,10 +12,8 @@ let config = defineConfig({
   },
   devServer: {
     proxy: {
-      [`^/v1`]: {
-        target: process.env.VUE_APP_BASE_URL,
-      },
-      [`/v2`]: {
+      [`/`]: {
+        ws: false,
         target: process.env.VUE_APP_BASE_URL,
       },
     },
