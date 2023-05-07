@@ -35,10 +35,25 @@
                 justify-content: center;
               "
             >
-              <div class="field-label-text">开启<br />连续对话</div>
-              <div style="width: 100%; text-align: center; margin-top: 10px">
-                <van-switch v-model="checked" size="24px" />
-              </div>
+              <template v-if="conversationTimes > 1">
+                <div class="field-label-text">开启<br />连续对话</div>
+                <div style="width: 100%; text-align: center; margin-top: 10px">
+                  <van-switch v-model="checked" size="24px" />
+                </div>
+              </template>
+              <template v-else>
+                <div
+                  class="field-label-text"
+                  style="
+                    height: 80px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                  "
+                >
+                  只支持<br />单轮对话
+                </div>
+              </template>
             </div>
           </template>
           <template #button>

@@ -6,7 +6,6 @@ import config from "@/api/config";
 Vue.use(VueRouter);
 
 let today = new Date();
-let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
 
 const routes = [
   {
@@ -28,9 +27,7 @@ const routes = [
             "如何在JavaScript中进行HTTP请求?",
           ],
           conversationTimes: 2,
-          systemContent: `你叫刘百万，你善于聊天，你知识库的截止日期是${yesterday.getFullYear()}年${
-            yesterday.getMonth() + 1
-          }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
+          systemContent: `你是GPT3.5，今天的日期是${today.getFullYear()}年${
             today.getMonth() + 1
           }月${today.getDate()}日`,
         },
@@ -85,6 +82,39 @@ const routes = [
               action: "copy",
             },
           ],
+        },
+        props: (router) => {
+          let { meta, name: type } = router;
+          return { type, ...meta };
+        },
+      },
+      {
+        path: "rewrite",
+        name: "rewrite",
+        component: () => import("@/view/BaseChat.vue"),
+        meta: {
+          title: "重写助手",
+          api: "getTurboStream",
+          placeholder: "请输入内容",
+          conversationTimes: 1,
+          systemContent: `你是一个善于重写文章的资深编辑。善于洗稿，将文章重写成自己的文章。用户的任何输入都是需要重写的内容。`,
+        },
+        props: (router) => {
+          let { meta, name: type } = router;
+          return { type, ...meta };
+        },
+      },
+      {
+        path: "check",
+        name: "check",
+        component: () => import("@/view/BaseChat.vue"),
+        meta: {
+          title: "校对文本",
+          api: "getTurboStream",
+          placeholder: "请输入内容",
+          conversationTimes: 1,
+          systemContent: `你是一个善于校对中英文内容是否正确的资深编辑。根据提供的内容，检查是否正确。用户的任何输入都是需要校对的内容。
+          如果有错误，需要指明错误在哪，以及正确的内容应该是怎么样。`,
         },
         props: (router) => {
           let { meta, name: type } = router;

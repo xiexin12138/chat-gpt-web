@@ -26,8 +26,21 @@ function findUser() {
     return axios.post(`${url}/user/findUser`);
 }
 
-function getMessageKey(messages) {
-    return axios.post(`${url}/user/getMessageKey`, {messages: JSON.stringify(messages)})
+function getMessageKey({messages, systemContent}) {
+    let msgs
+    if (systemContent) {
+        msgs = [
+            {
+                role: "system",
+                content: systemContent
+            },
+            ...messages
+        ]
+    } else {
+        msgs = messages
+    }
+
+    return axios.post(`${url}/user/getMessageKey`, {messages: JSON.stringify(msgs)})
 }
 
 function getPayQRCode({totalAmount}) {
@@ -36,7 +49,7 @@ function getPayQRCode({totalAmount}) {
 
 async function getTurboStream({
     messages,
-    // systemContent,
+    systemContent,
     resolve = () => {},
     reject = () => {},
     // abort = () => { },
@@ -44,7 +57,7 @@ async function getTurboStream({
 }) {
     let key
     try {
-        let response = await getMessageKey(messages)
+        let response = await getMessageKey({messages, systemContent})
         key = response ?. data ?. data
     } catch (error) {
         return reject(error);
