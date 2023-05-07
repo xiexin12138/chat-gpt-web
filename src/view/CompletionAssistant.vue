@@ -41,8 +41,8 @@
 <script>
 import { Field, CellGroup, Button, Divider } from "vant";
 import BlinkBlock from "@/components/BlinkBlock.vue";
-import api from "@/api/index";
 import util from "@/api/util";
+import server from '@/api/server';
 
 export default {
   name: "BaseChat",
@@ -91,7 +91,7 @@ export default {
     this.promptList = JSON.parse(JSON.stringify(this.templateList));
   },
   methods: {
-    commit(btn) {
+    async commit(btn) {
       let prompt = "";
       let noFillFormIndex = -1;
       switch (btn.action) {
@@ -122,7 +122,7 @@ export default {
                 },
               ];
               try {
-                let requestApi = api[this.api];
+                let requestApi = server[this.api];
                 let param = {
                   messages,
                   systemContent: this.systemContent,
@@ -142,7 +142,7 @@ export default {
                   },
                 };
                 this.result = "";
-                this.stopGenerated = requestApi(param);
+                this.stopGenerated = await requestApi(param);
               } catch (error) {
                 this.result = "生成失败：" + error?.message;
                 this.isLoading = false;

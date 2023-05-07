@@ -28,9 +28,17 @@
           border
         >
           <template #label>
-            <div class="field-label-text">开启<br />连续对话</div>
-            <div style="width: 100%; text-align: center; margin-top: 10px">
-              <van-switch v-model="checked" size="24px" />
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+              "
+            >
+              <div class="field-label-text">开启<br />连续对话</div>
+              <div style="width: 100%; text-align: center; margin-top: 10px">
+                <van-switch v-model="checked" size="24px" />
+              </div>
             </div>
           </template>
           <template #button>
@@ -50,7 +58,7 @@
 </template>
 
 <script>
-import api from "@/api/index";
+import server from "@/api/server";
 import { Field, Button, Switch } from "vant";
 import MainContentEmpty from "@/components/MainContentEmpty.vue";
 import MainContent from "@/components/MainContent.vue";
@@ -118,10 +126,9 @@ export default {
       },
     };
   },
-  created(){
-    let listStr = localStorage.getItem('conversationList') || '[]'
-    this.conversationList  = JSON.parse(listStr)
-
+  created() {
+    let listStr = localStorage.getItem("conversationList") || "[]";
+    this.conversationList = JSON.parse(listStr);
   },
   mounted() {
     let mode = this.$route.query?.mode;
@@ -135,6 +142,10 @@ export default {
       window.innerHeight ||
       document.documentElement.clientHeight ||
       document.body.clientHeight;
+
+    this.$nextTick(() => {
+      this.$refs.wrap.scrollTo(0, this.$refs.wrap.scrollHeight);
+    });
   },
   methods: {
     sendMessage(event) {
@@ -184,7 +195,7 @@ export default {
           }
         });
         try {
-          let requestApi = api[this.api];
+          let requestApi = server[this.api];
           let param = {
             messages,
             systemContent: this.systemContent,
@@ -208,8 +219,8 @@ export default {
                 answer.type = "error";
                 answer.content = result?.message;
               } else {
-                let list  = this.conversationList.slice(-(2 * 10));
-                localStorage.setItem('conversationList', JSON.stringify(list))
+                let list = this.conversationList.slice(-(2 * 10));
+                localStorage.setItem("conversationList", JSON.stringify(list));
               }
             },
             abort: () => {
@@ -220,7 +231,7 @@ export default {
               }
             },
           };
-          this.stopGenerated = requestApi(param);
+          this.stopGenerated = await requestApi(param);
         } catch (error) {
           this.promptValue = this.promptValue ? this.promptValue : content;
           answer.type = "error";

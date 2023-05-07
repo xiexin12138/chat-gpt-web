@@ -40,7 +40,7 @@
             <!-- white-space: pre-wrap 换行切保留空格 -->
             <div
               :style="{ color: item.type === 'error' ? 'red' : '' }"
-              style="white-space: pre-wrap"
+              style="white-space: pre-wrap; overflow: auto"
             >
               {{ item.content
               }}<BlinkBlock
@@ -94,12 +94,13 @@ export default {
   methods: {
     copy(obj) {
       let val = obj.content || "";
-      const input = document.createElement("input"); //创建input
-      input.setAttribute("value", val); //把input设置value
-      document.body.appendChild(input); //添加这个dom对象
-      input.select(); //选中该输入框
-      document.execCommand("copy"); //复制该文本
-      document.body.removeChild(input); //移除输入框
+      val = val.replace(/\\n/g, "\n"); // 将"\n"替换成实际的换行符
+      const input = document.createElement("textarea"); // 创建textarea
+      input.value = val; // 设置textarea的value属性
+      document.body.appendChild(input); // 添加这个dom对象
+      input.select(); // 选中该输入框
+      document.execCommand("copy"); // 复制该文本
+      document.body.removeChil;
       this.$toast("已复制");
     },
     toList(val) {

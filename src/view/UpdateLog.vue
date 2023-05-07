@@ -1,7 +1,10 @@
 <template>
   <div
     style="
-      height: 100vh;
+      box-sizing: border-box;
+      height: calc(100vh - 20px);
+      padding-top: 10px;
+      padding-bottom: 10px;
       width: 100vw;
       background-color: rgb(247, 248, 250);
     "

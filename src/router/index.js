@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-// import server from "@/api/server";
-// import config from "@/api/config";
+import server from "@/api/server";
+import config from "@/api/config";
 
 Vue.use(VueRouter);
 
@@ -91,21 +91,21 @@ const routes = [
           return { type, ...meta };
         },
       },
-      {
-        path: "image",
-        name: "image",
-        component: () => import("@/view/ImageGeneration.vue"),
-        meta: { title: "图像生成工具", api: "generateImage", freeTimes: 5 },
-        props: (router) => {
-          let { meta, name: type } = router;
-          return { type, ...meta };
-        },
-      },
+      // {
+      //   path: "image",
+      //   name: "image",
+      //   component: () => import("@/view/ImageGeneration.vue"),
+      //   meta: { title: "图像生成工具", api: "generateImage", freeTimes: 5 },
+      //   props: (router) => {
+      //     let { meta, name: type } = router;
+      //     return { type, ...meta };
+      //   },
+      // },
       {
         path: "contactUs",
         name: "contactUs",
         component: () => import("@/view/ContactUs.vue"),
-        meta: { title: "加群交流 (Contact Us)", tagText: "热" },
+        meta: { title: "加群交流", tagText: "热" },
         props: (router) => {
           let { meta, name: type } = router;
           return { type, ...meta };
@@ -124,16 +124,16 @@ const routes = [
           return { title, type };
         },
       },
-      // {
-      //   path: "login",
-      //   name: "login",
-      //   component: () => import("@/view/LoginAndRegister.vue"),
-      //   meta: { noShowInMenu: true, title: "登录" },
-      //   props: (router) => {
-      //     let { meta, name: type } = router;
-      //     return { type, ...meta };
-      //   },
-      // },
+      {
+        path: "login",
+        name: "login",
+        component: () => import("@/view/LoginAndRegister.vue"),
+        meta: { noShowInMenu: true, title: "登录" },
+        props: (router) => {
+          let { meta, name: type } = router;
+          return { type, ...meta };
+        },
+      },
     ],
     redirect: { path: "/chat" },
   },
@@ -144,29 +144,46 @@ const router = new VueRouter({
   routes,
 });
 
-// router.beforeEach(async (to, from, next) => {
-//   let Access_Token = localStorage.getItem(config.AccessTokenName);
-//   if (config.noAccessTokenPageNameList.includes(to.name)) {
-//     next();
-//   } else if (!Access_Token) {
-//     next({ name: "login" });
-//   } else {
-//     let response = await server.findUser({ accessToken: Access_Token });
-//     if (response?.data?.code === 200) {
-//       localStorage.setItem(
-//         config.UserInfoName,
-//         JSON.stringify(response.data.data)
-//       );
-//       next();
-//     } else {
-//       next({
-//         name: "login",
-//         params: {
-//           message: "登录已失效，请重新登录",
-//         },
-//       });
-//     }
-//   }
-// });
+router.beforeEach(async (to, from, next) => {
+  console.log("🚀 ~ file: index.js:148 ~ router.beforeEach ~ to, from:", to, from)
+  let Access_Token = localStorage.getItem(config.AccessTokenName);
+  if (config.noAccessTokenPageNameList.includes(to.name)) {
+    next();
+    try {
+      let response = await server.findUser();
+      if (response?.data?.code === 200) {
+        if (config.noAccessTokenPageNameList.includes(from.name)) {
+          next({ name: "chat" });
+        } else {
+          next({ name: from.name });
+        }
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  } else if (!Access_Token) {
+    next({ name: "login" });
+  } else {
+    try {
+      next();
+      let response = await server.findUser();
+      if (response?.data?.code === 200) {
+        localStorage.setItem(
+          config.UserInfoName,
+          JSON.stringify(response.data.data)
+        );
+      } else {
+        next({
+          name: "login",
+          params: {
+            message: "登录已失效，请重新登录",
+          },
+        });
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
+});
 
 export default router;

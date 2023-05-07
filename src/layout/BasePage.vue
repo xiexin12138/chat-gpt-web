@@ -10,11 +10,11 @@
         <van-icon name="apps-o" size="18" color="black" :dot="showNew" />
         <span style="margin-left: 5px">菜单</span>
       </template>
-      <template #right
-        ><van-icon name="gem-o" color="#000" /><span style="margin-left: 5px">{{
-          walletRemain
-        }}</span></template
-      >
+      <template #right>
+        <!-- <van-icon name="gem-o" color="#000" /><span style="margin-left: 5px">{{
+          getWalletReamin
+        }}</span> -->
+      </template>
     </van-nav-bar>
     <van-notice-bar
       v-if="showNoticeBar"
@@ -33,7 +33,7 @@
       position="left"
       style="width: 70%; height: 100vh; max-width: 400px"
     >
-      <LeftSide @go="go" :user="name" :wallet="walletRemain"></LeftSide>
+      <LeftSide @go="go"></LeftSide>
     </van-popup>
   </div>
 </template>
@@ -44,7 +44,7 @@ import { NavBar, Popup, NoticeBar } from "vant";
 import LeftSide from "@/components/LeftSide.vue";
 import log from "@/assets/log.json";
 import config from "@/api/config";
-
+import { mapGetters } from "vuex";
 export default {
   name: "BasePage",
   components: {
@@ -62,34 +62,28 @@ export default {
       showNavBar: false,
       showNoticeBar: false,
       currentCode: "001",
-      name: "用户",
       wallet: 0,
     };
   },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      console.log(
+        "🚀 ~ file: BasePage.vue:71 ~ next ~ vm.$route:",
+        vm.$route
+      );
+      vm.showNavBar = !vm.$route.meta?.noShowInMenu;
+    });
+  },
   mounted() {
+    console.log('mounted');
     this.title = this.$route.meta.title;
     this.showNavBar = !this.$route.meta?.noShowInMenu;
     this.checkIsNeedShowNew();
     this.checkIsNeedShowNoticeBar();
   },
-  updated() {
-    console.log("update");
-    this.updateUserInfo();
-  },
   methods: {
     checkLogin() {
       // let auth = localStorage.getItem("Auth");
-    },
-    updateUserInfo() {
-      let str = localStorage.getItem("User_Info");
-      if (str) {
-        let userInfo = JSON.parse(str);
-        this.name = userInfo.name;
-        this.wallet = userInfo.remainToken;
-      } else {
-        this.name = "用户";
-        this.wallet = 0;
-      }
     },
     checkIsNeedShowNoticeBar() {
       // 如果没有登陆态，不需要显示通知栏
@@ -99,10 +93,7 @@ export default {
       }
       let closeNoticeBarTime = localStorage.getItem("Close_Notice_Bar_Time");
       if (!closeNoticeBarTime) {
-        localStorage.setItem(
-          "Close_Notice_Bar_Time",
-          this.currentCode + "_0"
-        );
+        localStorage.setItem("Close_Notice_Bar_Time", this.currentCode + "_0");
         this.showNoticeBar = true;
       } else {
         let code = closeNoticeBarTime.split("_")[0];
@@ -174,9 +165,7 @@ export default {
     },
   },
   computed: {
-    walletRemain() {
-      return this.wallet / 100;
-    },
+    ...mapGetters(["getWalletReamin"]),
     defaultStyle() {
       let top = this.showNavBar ? 46 : 0;
       top = this.showNoticeBar ? top + 40 : top;
@@ -191,6 +180,7 @@ export default {
       if (to.meta?.noShowInMenu) {
         this.showNav = false;
       }
+      this.checkIsNeedShowNoticeBar()
     },
   },
 };

@@ -13,7 +13,9 @@ export default {
   data() {
     return {};
   },
-  mounted() {},
+  mounted() {
+    this.$store.dispatch("updateUserInfo");
+  },
 };
 </script>
 

@@ -1,151 +1,188 @@
 import axios from "./axios";
+import {EventSourcePolyfill} from "event-source-polyfill";
+import config from "./config";
 import "whatwg-fetch";
 import util from "./util";
-import config from "./config";
+// import util from "./util";
+// import config from "./config";
 
-const url =
-  process.env.NODE_ENV === "development" ? "" : process.env.VUE_APP_BASE_URL;
+const url = ''
+// process.env.NODE_ENV === "development" ? "" : process.env.VUE_APP_BASE_URL;
+console.log('url', url);
 
-function login({ email, code }) {
-  return axios.post(`${url}/user/login`, {
-    email,
-    code,
-  });
+function login({email, code, isSevenLogin}) {
+    return axios.post(`${url}/user/login`, {email, code, isSevenLogin});
 }
 
-function sign({ email, password, code }) {
-  return axios.post(`${url}/user/sign`, {
-    email,
-    password,
-    code,
-  });
+function sign({email, password, code}) {
+    return axios.post(`${url}/user/sign`, {email, password, code});
 }
 
-function sendCode({ email }) {
-  return axios.post(`${url}/user/sign/sendCode`, {
-    email,
-  });
+function sendCode({email}) {
+    console.log('url', url);
+    return axios.post(`${url}/user/sign/sendCode`, {email});
 }
 
-function findUser({ accessToken }) {
-  return axios.post(`${url}/user/findUser`, { accessToken });
+function findUser() {
+    return axios.post(`${url}/user/findUser`);
 }
 
-function getPayQRCode({ totalAmount }) {
-  return axios.post(`${url}/user/userAlipayQrCode`, { totalAmount });
+function getMessageKey(messages) {
+    return axios.post(`${url}/user/getMessageKey`, {messages: JSON.stringify(messages)})
 }
 
-function getTurboStream({
-  messages,
-  systemContent,
-  resolve = () => {},
-  reject = () => {},
-  abort = () => {},
-  maxCycleTimes = 5000, // 设置上限防止死循环
+function getPayQRCode({totalAmount}) {
+    return axios.post(`${url}/user/userAlipayQrCode`, {totalAmount});
+}
+
+async function getTurboStream({
+    messages,
+    // systemContent,
+    resolve = () => {},
+    reject = () => {},
+    // abort = () => { },
+    // maxCycleTimes = 5000, // 设置上限防止死循环
 }) {
-  let today = new Date();
-  let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
-  let loading = true;
-  let controller, signal;
-  if (AbortController) {
-    controller = new AbortController();
-    signal = controller.signal;
-  }
-  fetch(`${url}/chat/stream`, {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    method: "POST",
-    body: `accessToken=${
-      localStorage.getItem(config.AccessTokenName) || ""
-    }&messages=${JSON.stringify([
-      {
-        role: "system",
-        content: systemContent
-          ? systemContent
-          : `你的名字是智能助手，你知识库的截止日期是${yesterday.getFullYear()}年${
-              yesterday.getMonth() + 1
-            }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${
-              today.getMonth() + 1
-            }月${today.getDate()}日`,
-      },
-      ...messages,
-    ])}`,
-    timeout: 60 * 1000,
-    signal,
-  })
-    .then(async (es) => {
-      console.log("🚀 ~ file: server.js:77 ~ .then ~ es:", es);
-      let decoder = new TextDecoder("utf-8");
-      let count = 0;
-      let reader = es.body.getReader();
-      let objStringBuffer = "";
-      while (loading && count <= (maxCycleTimes || 5000)) {
-        let resStringList, res;
-        res = await reader?.read();
-        console.log("🚀 ~ file: server.js:85 ~ .then ~ res:", res);
-        let dataStringList = [];
-        resStringList = decoder
-          .decode(res.value)
-          .replace("\n\n", "\n")
-          .split(/\n/);
-        console.log(
-          "🚀 ~ file: server.js:91 ~ .then ~ resStringList:",
-          resStringList
-        );
-        for (let i = 0; i < resStringList.length; i++) {
-          let objStr = resStringList[i];
-          if (objStr.includes("data:")) {
-            dataStringList.push(objStr.split("data:")[1]);
-          } else if (objStr === "[DONE]") {
-            dataStringList.push(objStr.split("data:")[0]);
-          }
-        }
-        if (res?.done || dataStringList?.[1]?.includes("[DONE]\n\n")) {
-          loading = false;
-          reject();
-          break;
-        }
-        for (let i = 0; i < dataStringList.length; i++) {
-          let dataString = dataStringList[i];
-          if (dataString?.includes("[DONE]")) {
-            loading = false;
-            reject();
-            break;
-          }
-          let isJson = util.isJSONTest(dataString);
-          if (isJson) {
-            let obj = JSON.parse(dataString);
-            resolve(obj?.content || "");
-            objStringBuffer = "";
-          } else if (objStringBuffer) {
-            let obj = JSON.parse(
-              util.isJSONTest(objStringBuffer)
-                ? objStringBuffer
-                : objStringBuffer + dataString
-            );
-            resolve(obj?.content || "");
-            objStringBuffer = "";
-          } else {
-            objStringBuffer = objStringBuffer + dataString;
-          }
-        }
-        count++;
-      }
-    })
-    .catch((err) => {
-      if (err?.name === "AbortError") {
-        abort();
-      } else {
-        reject(err);
-      }
-    });
-  return function () {
-    loading = false;
-    if (AbortController) {
-      controller.abort();
+    let key
+    try {
+        let response = await getMessageKey(messages)
+        key = response ?. data ?. data
+    } catch (error) {
+        return reject(error);
     }
-  };
+    if (! key) {
+        return reject('服务器繁忙，请重试')
+    }
+    const eventSource = new EventSourcePolyfill(`${url}/chat/stream?messageKey=${key}`, {
+        headers: {
+            accessToken: localStorage.getItem(config.AccessTokenName)
+        }
+    });
+    eventSource.onmessage = (e) => {
+        if (!e.data) {
+            return
+        }
+        try {
+            if (e.data === "[DONE]") {
+                eventSource.close();
+                util.updateWallet()
+                reject();
+            } else {
+                let body = JSON.parse(e.data)
+                let content = body.content
+                if (content) {
+                    resolve(content);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            util.updateWallet()
+            eventSource.close();
+            reject(error);
+        }
+        // resolve
+    };
+    // let today = new Date();
+    // let yesterday = new Date(new Date() - 24 * 60 * 60 * 1000);
+    // let loading = true;
+    // let controller, signal;
+    // if (AbortController) {
+    // controller = new AbortController();
+    // signal = controller.signal;
+    // }
+    // fetch(`${url}/chat/stream`, {
+    // headers: {
+    //     "Content-Type": "application/x-www-form-urlencoded",
+    // },
+    // method: "POST",
+    // body: `accessToken=${localStorage.getItem(config.AccessTokenName) || ""
+    //     }&messages=${JSON.stringify([
+    //       {
+    //         role: "system",
+    //         content: systemContent
+    //           ? systemContent
+    //           : `你的名字是智能助手，你知识库的截止日期是${yesterday.getFullYear()}年${yesterday.getMonth() + 1
+    //           }月${yesterday.getDate()}日，现在的日期是${today.getFullYear()}年${today.getMonth() + 1
+    //           }月${today.getDate()}日`,
+    //       },
+    //       ...messages,
+    //     ])}`,
+    // timeout: 60 * 1000,
+    // signal,
+    // })
+    // .then(async (es) => {
+    //     console.log("🚀 ~ file: server.js:77 ~ .then ~ es:", es);
+    //     let decoder = new TextDecoder("utf-8");
+    //     let count = 0;
+    //     let reader = es.body.getReader();
+    //     let objStringBuffer = "";
+    //     while (loading && count <= (maxCycleTimes || 5000)) {
+    //       let resStringList, res;
+    //       res = await reader?.read();
+    //       console.log("🚀 ~ file: server.js:85 ~ .then ~ res:", res);
+    //       let dataStringList = [];
+    //       resStringList = decoder
+    //         .decode(res.value)
+    //         .replace("\n\n", "\n")
+    //         .split(/\n/);
+    //       console.log(
+    //         "🚀 ~ file: server.js:91 ~ .then ~ resStringList:",
+    //         resStringList
+    //       );
+    //       for (let i = 0; i < resStringList.length; i++) {
+    //         let objStr = resStringList[i];
+    //         if (objStr.includes("data:")) {
+    //           dataStringList.push(objStr.split("data:")[1]);
+    //         } else if (objStr === "[DONE]") {
+    //           dataStringList.push(objStr.split("data:")[0]);
+    //         }
+    //       }
+    //       if (res?.done || dataStringList?.[1]?.includes("[DONE]\n\n")) {
+    //         loading = false;
+    //         reject();
+    //         break;
+    //       }
+    //       for (let i = 0; i < dataStringList.length; i++) {
+    //         let dataString = dataStringList[i];
+    //         if (dataString?.includes("[DONE]")) {
+    //           loading = false;
+    //           reject();
+    //           break;
+    //         }
+    //         let isJson = util.isJSONTest(dataString);
+    //         if (isJson) {
+    //           let obj = JSON.parse(dataString);
+    //           resolve(obj?.content || "");
+    //           objStringBuffer = "";
+    //         } else if (objStringBuffer) {
+    //           let obj = JSON.parse(
+    //             util.isJSONTest(objStringBuffer)
+    //               ? objStringBuffer
+    //               : objStringBuffer + dataString
+    //           );
+    //           resolve(obj?.content || "");
+    //           objStringBuffer = "";
+    //         } else {
+    //           objStringBuffer = objStringBuffer + dataString;
+    //         }
+    //       }
+    //       count++;
+    //     }
+    // })
+    // .catch((err) => {
+    //     if (err?.name === "AbortError") {
+    //       abort();
+    //     } else {
+    //       reject(err);
+    //     }
+    // });
+    // return function () {
+    // loading = false;
+    // if (AbortController) {
+    //     controller.abort();
+    // }
+    // };
+    return eventSource.close.bind(eventSource)
 }
 
 /**
@@ -161,22 +198,23 @@ function getTurboStream({
  * @returns
  */
 // function completionFromOpenAI({
-//   apiName,
-//   messages,
-//   resolve = () => {},
-//   reject = () => {},
-//   abort = () => {},
-//   headers = {},
-//   maxCycleTimes = 5000, // 设置上限防止死循环
+// apiName,
+// messages,
+// resolve = () => {},
+// reject = () => {},
+// abort = () => {},
+// headers = {},
+// maxCycleTimes = 5000, // 设置上限防止死循环
 // }) {
 
 // }
 
 export default {
-  login,
-  sendCode,
-  sign,
-  findUser,
-  getPayQRCode,
-  getTurboStream,
+    login,
+    sendCode,
+    sign,
+    findUser,
+    getMessageKey,
+    getPayQRCode,
+    getTurboStream
 };
