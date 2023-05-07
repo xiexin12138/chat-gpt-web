@@ -1,5 +1,5 @@
 <template>
-  <div ref="wrap" class="wrap">
+  <div ref="wrap" class="image-wrap">
     <template v-if="!isLoading">
       <div class="title-description">
         -
@@ -277,13 +277,13 @@ export default {
 };
 </script>
 
-<style>
-.wrap {
-  height: calc(100vh - 60px);
+<style scoped>
+.image-wrap {
+  height: 100vh;
+  box-sizing: border-box;
   overflow: scroll;
   width: 100vw;
   background-color: rgb(247, 248, 250);
-  padding-top: 60px;
 }
 .pre-wrap {
   white-space: pre-wrap;
