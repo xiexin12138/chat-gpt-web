@@ -57,7 +57,7 @@
             "
           >
             <span style="color: #979797; font-size: 12px">{{
-              item.title
+              item.title ? `角色：${item.title}` : ''
             }}</span>
             <van-button
               v-if="item.type === 'answer'"

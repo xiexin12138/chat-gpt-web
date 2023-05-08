@@ -201,7 +201,7 @@ export default {
           if (conversation.type === "question") {
             messages.push({
               role: "user",
-              content: this.prefix + conversation.content,
+              content: (this.$route.meta.prefix ? this.$route.meta.prefix : "") + conversation.content,
             });
           } else if (conversation.type === "answer" && conversation.content) {
             messages.push({
