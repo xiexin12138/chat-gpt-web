@@ -6,7 +6,7 @@ import router from "./router";
 import config from "./api/config";
 import server from "./api/server";
 import store from './store/store';
-import { Icon, Toast, Lazyload } from "vant";
+import {Icon, Toast, Lazyload, Dialog} from "vant";
 
 import global from "@/api/global";
 
@@ -18,11 +18,12 @@ Vue.use(Vuex);
 Vue.use(Lazyload);
 Vue.use(Icon);
 Vue.prototype.$toast = Toast;
+Vue.prototype.$dialog = Dialog;
 
 Vue.config.productionTip = false;
 
 new Vue({
-  store,
-  router,
-  render: (h) => h(App),
+    store,
+    router,
+    render: (h) => h(App)
 }).$mount("#app");

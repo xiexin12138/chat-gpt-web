@@ -117,6 +117,21 @@
         </template> -->
       </van-form>
     </van-cell-group>
+    <div
+      style="
+        position: fixed;
+        bottom: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+      "
+    >
+      <span> 🎉 GPT4 独立站已上线 🎉 </span>
+      <a href="https://gpt4.gpthink.xyz/" target="_blank" style="color: #1989fa"
+        >https://gpt4.gpthink.xyz</a
+      >
+    </div>
   </div>
 </template>
 
@@ -236,6 +251,21 @@ export default {
       }
       try {
         this.$refs.sendCodeBtn.disabled = true;
+        // 禁用按钮
+        this.$refs.sendCodeBtn.disabled = true;
+        this.countDown = 60;
+        // 开始倒计时
+        this.timer = setInterval(() => {
+          if (this.countDown > 0) {
+            this.countDown--;
+          } else {
+            // 倒计时结束，启用按钮
+            clearInterval(this.timer);
+            this.$refs.sendCodeBtn.disabled = false;
+            this.countDown = 0;
+            localStorage.setItem("countDown", 0);
+          }
+        }, 1000);
         let res = await this.$server.sendCode({
           email: this.login.email || "",
         });
@@ -245,21 +275,6 @@ export default {
         );
         if (res?.data?.code === 200) {
           this.$toast("发送成功！");
-          // 禁用按钮
-          this.$refs.sendCodeBtn.disabled = true;
-          this.countDown = 60;
-          // 开始倒计时
-          this.timer = setInterval(() => {
-            if (this.countDown > 0) {
-              this.countDown--;
-            } else {
-              // 倒计时结束，启用按钮
-              clearInterval(this.timer);
-              this.$refs.sendCodeBtn.disabled = false;
-              this.countDown = 0;
-              localStorage.setItem("countDown", 0);
-            }
-          }, 1000);
         } else if (res?.data?.meg) {
           this.$toast(res?.data?.meg || "发送失败");
         } else {

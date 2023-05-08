@@ -22,6 +22,9 @@
       </van-list>
     </div>
     <div>
+      <van-list>
+        <van-cell @click="goToGPT4" style="font-size: 16px;"> 【付费】GPT4 问答 </van-cell>
+      </van-list>
       <div class="user-name">欢迎你，{{ userName }}</div>
       <!-- <van-list>
         <van-cell
@@ -61,6 +64,16 @@ export default {
     this.initMenu();
   },
   methods: {
+    goToGPT4() {
+      this.$dialog
+        .confirm({
+          title: "确认",
+          message: "是否在新窗口打开 GPT4 问答？",
+        })
+        .then(() => {
+          window.open('https://gpt4.gpthink.xyz');
+        });
+    },
     initMenu() {
       let children = this.$router.options.routes?.[0].children;
       children.forEach((child) => {
