@@ -48,7 +48,15 @@
               ></BlinkBlock>
             </div>
           </div>
-          <div style="display: flex; flex-direction: row-reverse">
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: space-between;
+            "
+          >
+            <span style="color: #979797">{{ item.title }}</span>
             <van-button
               v-if="item.type === 'answer'"
               icon="description"

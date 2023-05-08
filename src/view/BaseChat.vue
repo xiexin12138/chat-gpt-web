@@ -191,6 +191,7 @@ export default {
         this.conversationList.push({
           type: "answer",
           content: "",
+          title: this.$route.meta.title,
         });
         let answer = this.conversationList[this.conversationList.length - 1];
         let messages = [];

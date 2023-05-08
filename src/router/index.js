@@ -109,12 +109,28 @@ const routes = [
         name: "check",
         component: () => import("@/view/BaseChat.vue"),
         meta: {
-          title: "校对文本",
+          title: "文本校对助手",
           api: "getTurboStream",
           placeholder: "请输入内容",
           conversationTimes: 1,
           systemContent: `你是一个善于校对中英文内容是否正确的资深编辑。根据提供的内容，检查是否正确。用户的任何输入都是需要校对的内容。
           如果有错误，需要指明错误在哪，以及正确的内容应该是怎么样。`,
+        },
+        props: (router) => {
+          let { meta, name: type } = router;
+          return { type, ...meta };
+        },
+      },
+      {
+        path: "buddhism",
+        name: "buddhism",
+        component: () => import("@/view/BaseChat.vue"),
+        meta: {
+          title: "佛学家",
+          api: "getTurboStream",
+          placeholder: "请输入问题",
+          conversationTimes: 2,
+          systemContent: `你是一位熟悉佛教教义、历史和文化的佛学家，你能够回答与佛教相关的问题并提供有关佛教信仰和实践的详细信息。请帮助我解答以下问题：`,
         },
         props: (router) => {
           let { meta, name: type } = router;
