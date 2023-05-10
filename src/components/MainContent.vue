@@ -17,11 +17,11 @@
               :style="
                 item.type !== 'question'
                   ? 'background-color: rgb(16, 163, 127);'
-                  : ''
+                  : 'background-color: #646566;'
               "
             >
               <svg
-                v-show="item.type !== 'question'"
+                v-if="item.type !== 'question'"
                 width="41"
                 height="41"
                 viewBox="0 0 41 41"
@@ -36,6 +36,9 @@
                   fill="currentColor"
                 ></path>
               </svg>
+              <div style="color: white; font-size: 20px" v-else>
+                {{ userName }}
+              </div>
             </div>
             <!-- white-space: pre-wrap 换行切保留空格 -->
             <div
@@ -54,16 +57,16 @@
               flex-direction: row;
               align-items: center;
               justify-content: space-between;
+              padding: 10px 10px 0 0;
             "
           >
             <span style="color: #979797; font-size: 12px">{{
-              item.title ? `角色：${item.title}` : ''
+              item.title ? `角色：${item.title}` : ""
             }}</span>
-            <van-button
-              v-if="item.type === 'answer'"
+            <van-icon name="description" @click="copy(item)" size="15" />
+            <!-- <van-button
               icon="description"
-              @click="copy(item)"
-            />
+            /> -->
           </div>
         </div>
       </van-cell>
@@ -72,8 +75,9 @@
 </template>
 
 <script>
-import { List, Cell, Button } from "vant";
+import { List, Cell, Icon } from "vant";
 import BlinkBlock from "@/components/BlinkBlock.vue";
+import config from "@/api/config";
 
 export default {
   name: "MainContent",
@@ -90,11 +94,23 @@ export default {
   components: {
     VanList: List,
     VanCell: Cell,
-    VanButton: Button,
+    VanIcon: Icon,
     BlinkBlock,
   },
   data() {
-    return {};
+    return {
+      userName: "user",
+    };
+  },
+  mounted() {
+    let str = localStorage.getItem(config.UserInfoName);
+    try {
+      let userInfo = JSON.parse(str);
+      this.userName = userInfo.email.split("@")[0].slice(0,3); 
+    } catch (error) {
+      console.log(error);
+    }
+    console.log("str", str);
   },
   computed: {
     showBlinkBlock() {

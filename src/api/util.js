@@ -1,6 +1,5 @@
 import server from "@/api/server";
 import config from "@/api/config";
-import store from "@/store/store";
 
 function copy(content) {
   let val = content || "";
@@ -33,7 +32,6 @@ async function updateUserInfo() {
 async function updateWallet() {
   try {
     await updateUserInfo()
-    store.dispatch("updateUserInfo");
   } catch (error) {
     console.log('error', error);
   }
