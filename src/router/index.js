@@ -178,7 +178,7 @@ const routes = [{
                 title: "专利工程师",
                 api: "getTurboStream",
                 placeholder: "请输入问题",
-                conversationTimes: 3,
+                conversationTimes: 2,
                 systemContent: `您是一位经验丰富的计算机技术领域的专利工程师，擅长挖掘和完善计算机技术领域的专利。请帮助我分析和改进以下专利想法，并提供相关的技术背景、现有技术、创新点和潜在应用场景。`,
                 prefix: '专利想法如下：'
             },

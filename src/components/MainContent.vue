@@ -36,7 +36,17 @@
                   fill="currentColor"
                 ></path>
               </svg>
-              <div style="color: white; font-size: 20px" v-else>
+              <div
+                style="
+                  color: white;
+                  font-size: 20px;
+                  width: 30px;
+                  height: 30px;
+                  line-height: 30px;
+                  text-align: center;
+                "
+                v-else
+              >
                 {{ userName }}
               </div>
             </div>
@@ -106,7 +116,7 @@ export default {
     let str = localStorage.getItem(config.UserInfoName);
     try {
       let userInfo = JSON.parse(str);
-      this.userName = userInfo.email.split("@")[0].slice(0,3); 
+      this.userName = userInfo.email.split("@")[0].slice(0, 3);
     } catch (error) {
       console.log(error);
     }
