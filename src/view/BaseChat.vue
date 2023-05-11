@@ -212,6 +212,9 @@ export default {
             });
           }
         });
+        this.$nextTick(() => {
+          this.$refs.wrap?.scrollTo(0, this.$refs.wrap.scrollHeight);
+        });
         try {
           let requestApi = server[this.api];
           let param = {
@@ -256,9 +259,6 @@ export default {
           answer.content = error.message;
           this.isLoading = false;
         }
-        this.$nextTick(() => {
-          this.$refs.wrap?.scrollTo(0, this.$refs.wrap.scrollHeight);
-        });
       }
     },
     recommit() {

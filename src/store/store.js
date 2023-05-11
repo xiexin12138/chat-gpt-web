@@ -21,7 +21,6 @@ export default new Vuex.Store({
         updateRechargeToken(state, rechargeToken) {
             state.rechargeToken = rechargeToken;
         },
-
         updateUserName(state, name) {
             state.userName = name;
         }
@@ -35,7 +34,7 @@ export default new Vuex.Store({
                 user = JSON.parse(str);
             } catch (error) {
                 console.error(error);
-                util.updateWallet();
+                // util.updateWallet();
             }
             commit("updateRemainToken", Number.parseInt(user ?. remainToken || 0));
             commit("updateRechargeToken", Number.parseInt(user ?. rechargeToken || 0));
