@@ -129,15 +129,28 @@ export default {
   },
   methods: {
     copy(obj) {
-      let val = obj.content || "";
-      val = val.replace(/\\n/g, "\n"); // 将"\n"替换成实际的换行符
-      const input = document.createElement("textarea"); // 创建textarea
-      input.value = val; // 设置textarea的value属性
-      document.body.appendChild(input); // 添加这个dom对象
-      input.select(); // 选中该输入框
-      document.execCommand("copy"); // 复制该文本
-      document.body.removeChil;
-      this.$toast("已复制");
+      if (navigator?.clipboard?.writeText) {
+        navigator?.clipboard
+          ?.writeText(obj.content)
+          .then(() => {
+            this.$toast("已复制");
+          })
+          .catch((err) => {
+            console.error("复制失败：", err.message);
+          });
+      } else {
+        let val = obj.content || "";
+        val = val.replace(/\\n/g, "\n"); // 将"\n"替换成实际的换行符
+        const input = document.createElement("textarea"); // 创建textarea
+        input.id = "copy-temp-input";
+        input.value = val; // 设置textarea的value属性
+        document.body.appendChild(input); // 添加这个dom对象
+        input.select(); // 选中该输入框
+        document.execCommand("copy"); // 复制该文本
+        const child = document.getElementById("copy-temp-input");
+        document.body.removeChild(child);
+        this.$toast("已复制");
+      }
     },
     toList(val) {
       return val.split("\\n");
