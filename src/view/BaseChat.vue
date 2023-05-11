@@ -159,7 +159,7 @@ export default {
       document.body.clientHeight;
 
     this.$nextTick(() => {
-      this.$refs.wrap.scrollTo(0, this.$refs.wrap.scrollHeight);
+      this.$refs.wrap?.scrollTo(0, this.$refs.wrap.scrollHeight);
     });
   },
   methods: {
@@ -201,7 +201,9 @@ export default {
           if (conversation.type === "question") {
             messages.push({
               role: "user",
-              content: (this.$route.meta.prefix ? this.$route.meta.prefix : "") + conversation.content,
+              content:
+                (this.$route.meta.prefix ? this.$route.meta.prefix : "") +
+                conversation.content,
             });
           } else if (conversation.type === "answer" && conversation.content) {
             messages.push({
@@ -219,10 +221,10 @@ export default {
               this.$nextTick(() => {
                 answer.content += data;
                 if (
-                  this.windowHeight + this.$refs.wrap.scrollTop + 50 >=
+                  this.windowHeight + this.$refs.wrap?.scrollTop + 50 >=
                   this.$refs.wrap.scrollHeight
                 ) {
-                  this.$refs.wrap.scrollTo(0, this.$refs.wrap.scrollHeight);
+                  this.$refs.wrap?.scrollTo(0, this.$refs.wrap.scrollHeight);
                 }
               });
             },
@@ -255,7 +257,7 @@ export default {
           this.isLoading = false;
         }
         this.$nextTick(() => {
-          this.$refs.wrap.scrollTo(0, this.$refs.wrap.scrollHeight);
+          this.$refs.wrap?.scrollTo(0, this.$refs.wrap.scrollHeight);
         });
       }
     },

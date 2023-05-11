@@ -75,7 +75,6 @@ export default {
     });
   },
   mounted() {
-    console.log('mounted');
     this.title = this.$route.meta.title;
     this.showNavBar = !this.$route.meta?.noShowInMenu;
     this.checkIsNeedShowNew();

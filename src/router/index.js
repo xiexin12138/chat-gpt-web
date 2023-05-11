@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import server from "@/api/server";
-import config from "@/api/config";
+// import server from "@/api/server";
+// import config from "@/api/config";
 
 Vue.use(VueRouter);
 
@@ -152,45 +152,45 @@ const routes = [{
                     };
                 }
             }, {
-            path: "psychological",
-            name: "psychological",
-            component: () => import ("@/view/BaseChat.vue"),
-            meta: {
-                title: "心理咨询师",
-                api: "getTurboStream",
-                placeholder: "请输入问题",
-                conversationTimes: 2,
-                systemContent: `你是一位心理咨询师`,
-                prefix: '请帮助我分析以下情况并提供一些建议：'
+                path: "psychological",
+                name: "psychological",
+                component: () => import ("@/view/BaseChat.vue"),
+                meta: {
+                    title: "心理咨询师",
+                    api: "getTurboStream",
+                    placeholder: "请输入问题",
+                    conversationTimes: 2,
+                    systemContent: `你是一位心理咨询师`,
+                    prefix: '请帮助我分析以下情况并提供一些建议：'
+                },
+                props: (router) => {
+                    let {meta, name: type} = router;
+                    return {
+                        type,
+                        ...meta
+                    };
+                }
+            }, {
+                path: "patent",
+                name: "patent",
+                component: () => import ("@/view/BaseChat.vue"),
+                meta: {
+                    title: "专利工程师",
+                    api: "getTurboStream",
+                    placeholder: "请输入问题",
+                    conversationTimes: 2,
+                    systemContent: `您是一位经验丰富的计算机技术领域的专利工程师，擅长挖掘和完善计算机技术领域的专利。请帮助我分析和改进以下专利想法，并提供相关的技术背景、现有技术、创新点和潜在应用场景。`,
+                    prefix: '专利想法如下：'
+                },
+                props: (router) => {
+                    let {meta, name: type} = router;
+                    return {
+                        type,
+                        ...meta
+                    };
+                }
             },
-            props: (router) => {
-                let {meta, name: type} = router;
-                return {
-                    type,
-                    ...meta
-                };
-            }
-        }, {
-            path: "patent",
-            name: "patent",
-            component: () => import ("@/view/BaseChat.vue"),
-            meta: {
-                title: "专利工程师",
-                api: "getTurboStream",
-                placeholder: "请输入问题",
-                conversationTimes: 2,
-                systemContent: `您是一位经验丰富的计算机技术领域的专利工程师，擅长挖掘和完善计算机技术领域的专利。请帮助我分析和改进以下专利想法，并提供相关的技术背景、现有技术、创新点和潜在应用场景。`,
-                prefix: '专利想法如下：'
-            },
-            props: (router) => {
-                let {meta, name: type} = router;
-                return {
-                    type,
-                    ...meta
-                };
-            }
-        },
-            
+
 
             // {
             // path: "image",
@@ -254,43 +254,43 @@ const routes = [{
 
 const router = new VueRouter({mode: "hash", routes});
 
-router.beforeEach(async (to, from, next) => {
-    console.log("🚀 ~ file: index.js:148 ~ router.beforeEach ~ to, from:", to, from)
-    let Access_Token = localStorage.getItem(config.AccessTokenName);
-    if (config.noAccessTokenPageNameList.includes(to.name)) {
-        next();
-        try {
-            let response = await server.findUser();
-            if (response ?. data ?. code === 200) {
-                if (config.noAccessTokenPageNameList.includes(from.name)) {
-                    next({name: "chat"});
-                } else {
-                    next({name: from.name});
-                }
-            }
-        } catch (error) {
-            console.log("error", error);
-        }
-    } else if (! Access_Token) {
-        next({name: "login"});
-    } else {
-        try {
-            next();
-            let response = await server.findUser();
-            if (response ?. data ?. code === 200) {
-                localStorage.setItem(config.UserInfoName, JSON.stringify(response.data.data));
-            } else {
-                next({
-                    name: "login",
-                    params: {
-                        message: "登录已失效，请重新登录"
-                    }
-                });
-            }
-        } catch (error) {
-            console.log("error", error);
-        }
-    }
-});
+// router.beforeEach(async (to, from, next) => {
+//     //     console.log("🚀 ~ file: index.js:148 ~ router.beforeEach ~ to, from:", to, from)
+//     //     let Access_Token = localStorage.getItem(config.AccessTokenName);
+//     //     if (config.noAccessTokenPageNameList.includes(to.name)) {
+//     next();
+    //         try {
+    //             let response = await server.findUser();
+    //             if (response ?. data ?. code === 200) {
+    //                 if (config.noAccessTokenPageNameList.includes(from.name)) {
+    //                     next({name: "chat"});
+    //                 } else {
+    //                     next({name: from.name});
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             console.log("error", error);
+    //         }
+    //     } else if (! Access_Token) {
+    //         next({name: "login"});
+    //     } else {
+    //         try {
+    //             next();
+    // let response = await server.findUser();
+    // if (response ?. data ?. code === 200) {
+    //     localStorage.setItem(config.UserInfoName, JSON.stringify(response.data.data));
+    //     //             } else {
+    //     //                 next({
+    //     //                     name: "login",
+    //     //                     params: {
+    //     //                         message: "登录已失效，请重新登录"
+    //     //                     }
+    //     //                 });
+    //     //             }
+    //     //         } catch (error) {
+    //     //             console.log("error", error);
+    //     //         }
+    // }
+// });
 
 export default router;

@@ -115,6 +115,13 @@
             <div class="clickable" @click="goto('login')">已有账号？去登陆</div>
           </div>
         </template> -->
+        <div style="text-align: center; padding: 20px">
+          <a
+            style="color: rgb(25, 137, 250); cursor: pointer"
+            @click="goto('chat')"
+            >我想先进去看看它能做什么</a
+          >
+        </div>
       </van-form>
     </van-cell-group>
     <div
@@ -214,6 +221,7 @@ export default {
                 this.$config.AccessTokenName,
                 result?.data?.data
               );
+              this.$store.dispatch("updateUserInfo");
               this.$toast("登陆成功");
               localStorage.setItem("countDown", 0);
               this.$router.push({ name: "chat" });

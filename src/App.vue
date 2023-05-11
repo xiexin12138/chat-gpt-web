@@ -14,7 +14,7 @@ export default {
     return {};
   },
   mounted() {
-    this.$store.dispatch("updateUserInfo");
+    // this.$store.dispatch("updateUserInfo");
   },
 };
 </script>

@@ -47,7 +47,7 @@
                 "
                 v-else
               >
-                {{ userName }}
+                {{ userName || "游客" }}
               </div>
             </div>
             <!-- white-space: pre-wrap 换行切保留空格 -->
@@ -115,8 +115,8 @@ export default {
   mounted() {
     let str = localStorage.getItem(config.UserInfoName);
     try {
-      let userInfo = JSON.parse(str);
-      this.userName = userInfo.email.split("@")[0].slice(0, 3);
+      let userInfo = JSON.parse(str || "{}");
+      this.userName = userInfo?.email?.split("@")[0].slice(0, 3);
     } catch (error) {
       console.log(error);
     }

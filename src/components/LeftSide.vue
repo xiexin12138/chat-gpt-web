@@ -23,11 +23,19 @@
     </div>
     <div>
       <van-list>
-        <van-cell @click="goToGPT4" style="font-size: 16px;cursor: pointer">
+        <van-cell @click="goToGPT4" style="font-size: 16px; cursor: pointer">
           【进阶能力】GPT4 问答
         </van-cell>
       </van-list>
-      <div class="user-name">欢迎你，{{ userName }}</div>
+      <div v-if="userName" class="user-name">欢迎你，{{ userName }}</div>
+      <div
+        v-else
+        class="user-name"
+        style="cursor: pointer"
+        @click="goto('login')"
+      >
+        游客你好，登录后立即免费使用
+      </div>
       <!-- <van-list>
         <van-cell
           v-for="(item, index) in menuList"
@@ -77,6 +85,9 @@ export default {
           window.open("https://gpt4.gpthink.xyz");
         })
         .catch(() => {});
+    },
+    goto(name) {
+      this.$router.push({ name });
     },
     initMenu() {
       let children = this.$router.options.routes?.[0].children;
