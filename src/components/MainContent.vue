@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <van-list>
+    <van-list id="contentImage">
       <van-cell v-for="(item, index) in conversationList" :key="index">
         <div>
           <div style="display: flex; gap: 1rem">
@@ -73,10 +73,14 @@
             <span style="color: #979797; font-size: 12px">{{
               item.title ? `角色：${item.title}` : ""
             }}</span>
-            <van-icon name="description" @click="copy(item)" size="15" />
-            <!-- <van-button
-              icon="description"
-            /> -->
+            <div style="display: flex; gap: 10px" v-show="!beginGenerateImg">
+              <van-icon
+                name="delete-o"
+                @click="deleteItem(item, index)"
+                size="15"
+              />
+              <van-icon name="description" @click="copy(item)" size="15" />
+            </div>
           </div>
         </div>
       </van-cell>
@@ -97,6 +101,10 @@ export default {
       default: () => [],
     },
     loading: {
+      type: Boolean,
+      default: false,
+    },
+    beginGenerateImg: {
       type: Boolean,
       default: false,
     },
@@ -128,6 +136,9 @@ export default {
     },
   },
   methods: {
+    deleteItem(item, index) {
+      this.$emit("delete-item", item, index);
+    },
     copy(obj) {
       if (navigator?.clipboard?.writeText) {
         navigator?.clipboard

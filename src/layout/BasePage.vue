@@ -67,10 +67,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      console.log(
-        "🚀 ~ file: BasePage.vue:71 ~ next ~ vm.$route:",
-        vm.$route
-      );
+      console.log("🚀 ~ file: BasePage.vue:71 ~ next ~ vm.$route:", vm.$route);
       vm.showNavBar = !vm.$route.meta?.noShowInMenu;
     });
   },
@@ -168,9 +165,10 @@ export default {
     defaultStyle() {
       let top = this.showNavBar ? 46 : 0;
       top = this.showNoticeBar ? top + 40 : top;
-      return this.showNoticeBar
-        ? `height: calc(100vh - ${top}px); background-color: rgb(247, 247, 248);overflow: scroll;`
-        : "height: 100vh; background-color: rgb(247, 247, 248);overflow: scroll;";
+      // return this.showNoticeBar
+      //   ?
+      return `height: calc(100vh - ${top}px); background-color: rgb(247, 247, 248);overflow: scroll;`;
+      // : "height: 100vh; background-color: rgb(247, 247, 248);overflow: scroll;";
     },
   },
   watch: {
@@ -179,7 +177,7 @@ export default {
       if (to.meta?.noShowInMenu) {
         this.showNav = false;
       }
-      this.checkIsNeedShowNoticeBar()
+      this.checkIsNeedShowNoticeBar();
     },
   },
 };
