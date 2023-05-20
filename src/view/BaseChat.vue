@@ -2,6 +2,7 @@
   <div ref="wrap" style="height: 100vh; overflow: scroll">
     <div style="padding-top: 40px; padding-bottom: 150px; overflow: scroll">
       <MainContent
+        id="imageContent"
         :loading="isLoading"
         :conversationList="conversationList"
         v-show="conversationList.length > 0"
@@ -26,6 +27,30 @@
           row="3"
           border
         >
+          <template #label>
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                gap: 5px;
+                margin-right: 10px;
+              "
+            >
+              <van-button
+                size="small"
+                @click="clearAllConversation"
+                :disabled="isLoading"
+                >清空</van-button
+              >
+              <van-button
+                size="small"
+                @click="generateImage"
+                :disabled="isLoading"
+                >分享</van-button
+              >
+            </div>
+          </template>
           <template #button>
             <van-button
               @click="commit(promptValue)"
@@ -47,6 +72,7 @@ import api from "@/api/index";
 import { Field, Button } from "vant";
 import MainContentEmpty from "@/components/MainContentEmpty.vue";
 import MainContent from "@/components/MainContent.vue";
+import html2canvas from "html2canvas";
 
 export default {
   name: "BaseChat",
@@ -123,6 +149,34 @@ export default {
       document.body.clientHeight;
   },
   methods: {
+    clearAllConversation() {
+      this.$dialog
+        .confirm({
+          title: "确认",
+          message: "是否清空全部对话？",
+        })
+        .then(() => {
+          this.conversationList = [];
+        })
+        .catch(() => {});
+    },
+    generateImage() {
+      // 获取需要截图的元素
+      const element = document.getElementById("imageContent");
+      // 使用html2canvas将元素转换为canvas
+      html2canvas(element).then((canvas) => {
+        // 将canvas转换为图片
+        const imgData = canvas.toDataURL("image/png");
+        // 创建一个a标签，用于下载图片
+        const link = document.createElement("a");
+        link.download = "share.png";
+        link.href = imgData;
+        // 将a标签添加到页面中，并模拟点击下载
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    },
     sendMessage(event) {
       if (this.isLoading) {
         return;
