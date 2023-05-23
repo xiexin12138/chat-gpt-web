@@ -23,7 +23,7 @@
       background="#ecf9ff"
       mode="closeable"
       scrollable
-      text="如果你对 AIGC 感兴趣，欢迎加群讨论"
+      text="为防止被墙后走丢，请点击提示栏加群防丢；如果你对 AIGC 技术感兴趣，欢迎加TG群探讨"
       @click="goToJoinGroup"
       @close="closeNoticeBart"
     />
