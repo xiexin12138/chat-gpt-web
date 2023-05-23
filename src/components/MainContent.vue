@@ -73,13 +73,13 @@
             <span style="color: #979797; font-size: 12px">{{
               item.title ? `角色：${item.title}` : ""
             }}</span>
-            <div style="display: flex; gap: 10px" v-show="!beginGenerateImg">
+            <div style="display: flex; gap: 15px" v-show="!beginGenerateImg">
+              <van-icon name="description" @click="copy(item)" size="18" />
               <van-icon
                 name="delete-o"
                 @click="deleteItem(item, index)"
-                size="15"
+                size="18"
               />
-              <van-icon name="description" @click="copy(item)" size="15" />
             </div>
           </div>
         </div>
@@ -92,6 +92,7 @@
 import { List, Cell, Icon } from "vant";
 import BlinkBlock from "@/components/BlinkBlock.vue";
 import config from "@/api/config";
+import util from "@/api/util";
 
 export default {
   name: "MainContent",
@@ -140,28 +141,7 @@ export default {
       this.$emit("delete-item", item, index);
     },
     copy(obj) {
-      if (navigator?.clipboard?.writeText) {
-        navigator?.clipboard
-          ?.writeText(obj.content)
-          .then(() => {
-            this.$toast("已复制");
-          })
-          .catch((err) => {
-            console.error("复制失败：", err.message);
-          });
-      } else {
-        let val = obj.content || "";
-        val = val.replace(/\\n/g, "\n"); // 将"\n"替换成实际的换行符
-        const input = document.createElement("textarea"); // 创建textarea
-        input.id = "copy-temp-input";
-        input.value = val; // 设置textarea的value属性
-        document.body.appendChild(input); // 添加这个dom对象
-        input.select(); // 选中该输入框
-        document.execCommand("copy"); // 复制该文本
-        const child = document.getElementById("copy-temp-input");
-        document.body.removeChild(child);
-        this.$toast("已复制");
-      }
+      util.copy(obj.content);
     },
     toList(val) {
       return val.split("\\n");

@@ -1,14 +1,26 @@
 import server from "@/api/server";
 import config from "@/api/config";
+import { Toast } from "vant";
 
 function copy(content) {
-  let val = content || "";
-  const input = document.createElement("input"); //创建input
-  input.setAttribute("value", val); //把input设置value
-  document.body.appendChild(input); //添加这个dom对象
-  input.select(); //选中该输入框
-  document.execCommand("copy"); //复制该文本
-  document.body.removeChild(input); //移除输入框
+  navigator?.clipboard
+    ?.writeText(content)
+    .then(() => {
+      Toast("已复制");
+    })
+    .catch(() => {
+      let val = content || "";
+      val = val.replace(/\\n/g, "\n"); // 将"\n"替换成实际的换行符
+      const input = document.createElement("textarea"); // 创建textarea
+      input.id = "copy-temp-input";
+      input.value = val; // 设置textarea的value属性
+      document.body.appendChild(input); // 添加这个dom对象
+      input.select(); // 选中该输入框
+      document.execCommand("copy"); // 复制该文本
+      const child = document.getElementById("copy-temp-input");
+      document.body.removeChild(child);
+      Toast("已复制");
+    });
 }
 
 async function updateUserInfo() {
