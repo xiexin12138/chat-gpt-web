@@ -17,7 +17,9 @@ axios.interceptors.request.use((config) => {
         // config.headers.accessToken = auth;
     }
     config.headers.accessToken = auth;
-    config.headers["Content-Type"] = "application/x-www-form-urlencoded";
+    if (!config.headers["Content-Type"]) {
+        config.headers["Content-Type"] = "application/x-www-form-urlencoded";
+    }
     return config;
 }, (error) => { // 对请求错误做些什么
     return Promise.reject(error);

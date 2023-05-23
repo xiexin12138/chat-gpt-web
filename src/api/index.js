@@ -61,6 +61,10 @@ function translate(content) {
       },
     ],
     temperature: 0,
+  }, {
+    headers: {
+      "Content-Type": "application/json"
+    }
   });
 }
 
