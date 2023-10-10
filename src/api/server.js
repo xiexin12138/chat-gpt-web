@@ -6,7 +6,7 @@ import util from "./util";
 // import util from "./util";
 // import config from "./config";
 
-const url = '' // process.env.NODE_ENV === "development" ? "" : process.env.VUE_APP_BASE_URL;
+const url = process.env.NODE_ENV === "development" ? "" : process.env.VUE_APP_BASE_URL;
 console.log('url', url);
 
 function login({email, code, isSevenLogin}) {
