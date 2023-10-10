@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vue-cli-service serve --mode=dev",
     "build:fat": "NODE_ENV=development vue-cli-service build --mode=dev && cd dist && zip -r dist.zip . && cd ..",
-    "build": "NODE_ENV=production vue-cli-service build --mode=prd && cd dist && zip -r dist.zip . && cd .."
+    "build:prd": "NODE_ENV=production vue-cli-service build --mode=prd && cd dist && zip -r dist.zip . && cd ..",
+    "build": "NODE_ENV=production vue-cli-service build"
   },
   "dependencies": {
     "@highlightjs/vue-plugin": "1.0.2",
