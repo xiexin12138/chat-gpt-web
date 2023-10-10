@@ -1,7 +1,7 @@
 import "whatwg-fetch";
 import axios from "axios";
 
-const BASE_URL = '' // process.env.VUE_APP_BASE_URL; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
+const BASE_URL = process.env.VUE_APP_BASE_URL; // 因为众所周知的原因，现在需要转发服务器，否则请求会被拦截
 
 /**
  * 请求答案的
