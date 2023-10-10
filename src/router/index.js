@@ -23,7 +23,7 @@ const routes = [{
                     demoBtnList: [
                         "用简单的术语解释量子计算?", "给一个10岁的孩子过生日有什么创意吗?", "如何在JavaScript中进行HTTP请求?",
                     ],
-                    conversationTimes: 4,
+                    conversationTimes: 8,
                     systemContent: `你是GPT3.5，今天的日期是${
                         today.getFullYear()
                     }年${

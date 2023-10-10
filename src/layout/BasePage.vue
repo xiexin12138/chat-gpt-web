@@ -23,7 +23,7 @@
       background="#ecf9ff"
       mode="closeable"
       scrollable
-      text="为防止被墙后走丢，请点击提示栏加群防丢；如果你对 AIGC 技术感兴趣，欢迎加TG群探讨"
+      text="解除了输入框长度限制，可能在问答中会超长报错，如果报错请删除掉一部分对话内容即可继续对话；为防止被墙后走丢，请点击提示栏加群防丢；如果你对 AIGC 技术感兴趣，欢迎加TG群探讨"
       @click="goToJoinGroup"
       @close="closeNoticeBart"
     />
